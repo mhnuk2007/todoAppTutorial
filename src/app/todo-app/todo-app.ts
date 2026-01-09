@@ -41,20 +41,29 @@ export class TodoApp implements OnInit {
     }
 
     // Generate unique ID and set creation date
+    this.generateId();
+
+    // Add task immutably
+    this.todoList.update((list) => {
+      return [...list, { ...this.newTask }];
+    });
+
+    // Persist to storage
+    this.saveToLocalStorage();
+
+    // Reset form
+    this.newTask = new TodoItemModel();
+  }
+
+  generateId() {
     const newDate = new Date();
     this.newTask.todoItemId =
       this.todoList().length + 1 + newDate.getDay() + newDate.getMilliseconds();
     this.newTask.createdDate = newDate;
+  }
 
-    // Add task immutably
-    this.todoList.update((list)=>{
-      return [...list, {...this.newTask}]})
-
-    // Persist to storage
+  saveToLocalStorage() {
     localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
-
-    // Reset form
-    this.newTask = new TodoItemModel();
   }
 }
 
