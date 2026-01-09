@@ -173,11 +173,12 @@ MIT License – see [LICENSE](LICENSE)
 
 ## 💬 Support
 
-- 📖 [Tutorial](TUTORIAL.md)
+- 📖 [Tutorial](todoAppTutorial.md)
 - 🐛 [Report Issues](https://github.com/yourusername/angular-todo-app/issues)
 - 💬 [Discussions](https://github.com/yourusername/angular-todo-app/discussions)
 
 ---
 
 > ⚡ **Note:** This README is meant to show **project progress so far**. The app is in early stages, and features will be implemented incrementally following the tutorial steps.
+
 
