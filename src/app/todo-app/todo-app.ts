@@ -11,3 +11,19 @@ import { FormsModule } from '@angular/forms';
 export class TodoApp {
 
 }
+
+class TodoItemModel{
+  todoItemId: number;
+  todoItem: string;
+  createdDate: Date;
+  status: string;
+
+  constructor(){
+    this.todoItemId = 0;
+    this.todoItem = '';
+    this.createdDate = new Date();
+    this.status = 'pending';
+
+  }
+
+}
