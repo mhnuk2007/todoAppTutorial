@@ -24,22 +24,22 @@ Create a new Angular application:
 ```bash
 ng new todo-app
 cd todo-app
-ng serve
 ```
 
 **During setup, choose:**
 - ✅ CSS for styling
 - ❌ No routing (for this simple app)
 
-Your app will run at `http://localhost:4200`
-
-- run the app with 'ng serve' in terminal
-
+You can run your app at any time to see the progress:
+```bash
+ng serve
+```
+Your app will run at `http://localhost:4200`.
 
 ---
 ## **Step 3: Create the Todo Component**
 
-Generate todo-app component:
+Generate the `todo-app` component:
 
 ```bash
 ng generate component todo-app
@@ -51,18 +51,16 @@ This creates:
 - `todo-app.css` - Styles
 - `todo-app.spec.ts` - Testing
 
-
 ---
-## **Step 4: Update app template *app.html* **
-Remove all contents of app.html except <router-outlet />
+## **Step 4: Update app.html and app.ts**
 
-At the top of `app.html`, add <app-todo-app/>
+Replace the entire content of `src/app/app.html` with the following line to display your new component:
 
 ```html
 <app-todo-app />
 ```
 
-and import todo-app component in app.ts
+Next, open `src/app/app.ts` and import the `TodoApp` component. Your `app.ts` should look like this:
 
 ```typescript
 import { Component, signal } from '@angular/core';
@@ -78,6 +76,37 @@ export class App {
   protected readonly title = signal('todoAppTutorial');
 }
 ```
+---
+## **Step 5: Import Required Angular Modules**
+
+At the top of `todo-app.ts`, import necessary modules:
+
+```typescript
+import { DatePipe, NgClass } from '@angular/common';
+import { Component, OnInit, signal, computed } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+```
+
+**What each import does:**
+- `FormsModule` → Enables template-driven forms (ngModel)
+- `NgClass` → Conditional CSS classes
+- `DatePipe` → Format dates for display
+- `signal, computed` → Reactive state management
+
+Add to component decorator:
+
+```typescript
+@Component({
+  selector: 'app-todo-app',
+  imports: [FormsModule, NgClass, DatePipe],
+  templateUrl: './todo-app.html',
+  styleUrl: './todo-app.css',
+})
+```
+
+**Why standalone?**
+- No NgModule needed
+- Lighter bundle size
+- Modern Angular best practice
 
 ---
-
