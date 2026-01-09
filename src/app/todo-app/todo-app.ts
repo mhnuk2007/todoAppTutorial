@@ -8,7 +8,10 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './todo-app.html',
   styleUrl: './todo-app.css',
 })
-export class TodoApp {
+export class TodoApp{
+  newTask: TodoItemModel = new TodoItemModel();
+
+  todoList = signal<TodoItemModel[]>([]);
 
 }
 
