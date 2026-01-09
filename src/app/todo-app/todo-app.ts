@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './todo-app.html',
   styleUrl: './todo-app.css',
 })
-export class TodoApp{
+export class TodoApp implements OnInit{
   newTask: TodoItemModel = new TodoItemModel();
 
   // Main signal - single source of truth
@@ -19,20 +19,38 @@ export class TodoApp{
   filterStatus: string = 'All';
   sortOrder: string = 'newest';
 
+  localKeyName: string = 'todoItems';
+
+  ngOnInit(): void {
+    const localData = localStorage.getItem(this.localKeyName);
+    if (localData != null) {
+      const parseData = JSON.parse(localData);
+
+      // Convert date strings back to date objects
+      const TasksWithDates = parseData.map((task: TodoItemModel) => ({
+        ...task,
+        createdDate: new Date(task.createdDate),
+      }));
+      this.todoList.set(TasksWithDates);
+
+    }
+  }
+addTask() {
+
+  console.log(this.newTask.todoItem);
+}
 }
 
-class TodoItemModel{
+class TodoItemModel {
   todoItemId: number;
   todoItem: string;
   createdDate: Date;
   status: string;
 
-  constructor(){
+  constructor() {
     this.todoItemId = 0;
     this.todoItem = '';
     this.createdDate = new Date();
     this.status = 'pending';
-
   }
-
 }

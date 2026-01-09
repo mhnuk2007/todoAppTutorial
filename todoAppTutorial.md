@@ -1,6 +1,6 @@
 # 🧩 Angular Todo App – Complete Step-by-Step Tutorial
 
-This tutorial will guide you through building a modern, production-ready Todo application using Angular's latest features including standalone components and signals.
+This tutorial will guide you through building a modern, production-ready Todo application using Angular's latest features, including signals for reactive state management.
 
 ---
 
@@ -241,4 +241,76 @@ export class TodoApp implements OnInit {
 
 ---
 
+Now we need to add 'create task' functionality. Let's move to template to modify input box and add task button.
 
+---
+## **Step 9: Connect Template to Data Model**
+
+Now we need to add 'create task' functionality. Let's modify the template to connect the input box and add task button.
+
+### **Remove the `<form>` tag:**
+
+In `todo-app.html`, remove the `<form>` wrapper:
+
+```html
+<!-- Remove <form> and </form> tags -->
+<section class="custom-card">
+  <div class="row g-3 align-items-center">
+    <!-- your inputs here -->
+  </div>
+</section>
+```
+
+**Why avoid `<form>` with `ngModel`?**
+
+When `ngModel` is used inside a `<form>` tag, Angular requires either:
+1. A `name` attribute on each input, OR
+2. `[ngModelOptions]="{standalone: true}"` on each input
+
+Without these, you'll get an error: `NG01352`
+
+**If you must use `<form>` with `ngModel`, do this:**
+```html
+<form>
+  <input [(ngModel)]="newTask.todoItem" name="todoItem" />
+  <select [(ngModel)]="newTask.status" name="status"></select>
+</form>
+```
+
+### **Establish two-way binding:**
+
+Connect the input field to your data model using `[(ngModel)]`:
+
+```html
+<input
+  type="text"
+  [(ngModel)]="newTask.todoItem"
+  class="form-control"
+  placeholder="What needs to be done?">
+```
+
+### **Create `addTask()` function:**
+
+In `todo-app.ts`, add the following method:
+
+```typescript
+addTask() {
+  console.log(this.newTask.todoItem);
+}
+```
+
+### **Bind button click event:**
+
+Update the button in your template:
+
+```html
+<button (click)="addTask()" class="btn btn-primary-custom w-100">
+  Add
+</button>
+```
+
+### **Test it:**
+
+Type something in the input box, click the "Add" button, and check the browser console. You should see your input logged!
+
+---
