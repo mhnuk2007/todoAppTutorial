@@ -175,3 +175,36 @@ Output:
 Add generated html in todo-app.html and css in todo-app.css
 
 ---
+## **Step 7: Define the Task Model**
+
+Create a model class to define the structure of each task:
+
+```typescript
+class TodoItemModel {
+  todoItemId: number;
+  todoItem: string;
+  createdDate: Date;
+  status: string;
+
+  constructor() {
+    this.todoItemId = 0;
+    this.todoItem = '';
+    this.createdDate = new Date();
+    this.status = 'Pending';
+  }
+}
+```
+
+**Why use a model?**
+- Ensures consistent data structure
+- Provides default values
+- Makes code more maintainable
+- Easier to add TypeScript type checking
+
+**Available statuses:**
+- `Pending` - Task not started
+- `In Progress` - Task being worked on
+- `Completed` - Task finished
+
+---
+
