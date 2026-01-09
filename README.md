@@ -173,7 +173,7 @@ MIT License – see [LICENSE](LICENSE)
 
 ## 💬 Support
 
-- 📖 [Tutorial](TUTORIAL.md)
+- 📖 [Tutorial](todoAppTutorial.md)
 - 🐛 [Report Issues](https://github.com/yourusername/angular-todo-app/issues)
 - 💬 [Discussions](https://github.com/yourusername/angular-todo-app/discussions)
 
