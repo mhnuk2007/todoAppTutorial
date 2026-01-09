@@ -33,4 +33,8 @@ ng serve
 
 Your app will run at `http://localhost:4200`
 
+- run the app with 'ng serve' in terminal
+
+
+
 ---
