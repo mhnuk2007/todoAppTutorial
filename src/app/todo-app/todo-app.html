@@ -1,1 +1,150 @@
-<p>todo-app works!</p>
+<div class="app-container">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand-icon">
+      <i class="fa-solid fa-layer-group"></i>
+    </div>
+    <h1 class="app-title">TaskFlow</h1>
+    <p class="app-subtitle">Focus on what matters most.</p>
+  </header>
+
+  <!-- Add Task Section -->
+  <section class="custom-card">
+    <form>
+      <div class="row g-3 align-items-center">
+        <div class="col-md-7">
+          <label for="taskInput" class="visually-hidden">New Task</label>
+          <div class="input-group">
+            <span class="input-group-text">
+              <i class="fa-solid fa-plus"></i>
+            </span>
+            <input
+              type="text"
+              class="form-control"
+              id="taskInput"
+              placeholder="What needs to be done?">
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <label for="statusSelect" class="visually-hidden">Status</label>
+          <select class="form-select" id="statusSelect">
+            <option selected value="pending">Pending</option>
+            <option value="progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div class="col-6 col-md-2">
+          <button type="submit" class="btn btn-primary-custom w-100">
+            Add
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Controls Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4 filters-group">
+    <div class="position-relative flex-grow-1 me-md-3">
+      <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      <input
+        type="text"
+        class="form-control ps-5"
+        placeholder="Search tasks...">
+    </div>
+    <div class="d-flex gap-2 w-100 w-md-auto">
+      <select class="form-select w-auto">
+        <option selected>All Status</option>
+        <option>Pending</option>
+        <option>In Progress</option>
+        <option>Completed</option>
+      </select>
+      <select class="form-select w-auto">
+        <option selected>Newest</option>
+        <option>Oldest</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Task List -->
+  <ul class="task-list">
+
+    <!-- Item 1: In Progress -->
+    <li class="task-item">
+      <div class="task-checkbox-wrapper">
+        <input type="checkbox" class="task-checkbox" id="task1">
+        <label for="task1" class="checkbox-label"></label>
+      </div>
+      <div class="task-content">
+        <span class="task-title">Redesign Dashboard Homepage</span>
+        <div class="task-meta">
+          <span class="status-badge progress">In Progress</span>
+          <span class="meta-date"><i class="fa-regular fa-calendar"></i> Today, 10:30 AM</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="btn-icon edit" aria-label="Edit">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="btn-icon delete" aria-label="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+
+    <!-- Item 2: Pending -->
+    <li class="task-item">
+      <div class="task-checkbox-wrapper">
+        <input type="checkbox" class="task-checkbox" id="task2">
+        <label for="task2" class="checkbox-label"></label>
+      </div>
+      <div class="task-content">
+        <span class="task-title">Review Quarter 3 Financials</span>
+        <div class="task-meta">
+          <span class="status-badge pending">Pending</span>
+          <span class="meta-date"><i class="fa-regular fa-calendar"></i> Yesterday</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="btn-icon edit" aria-label="Edit">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="btn-icon delete" aria-label="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+
+    <!-- Item 3: Completed -->
+    <li class="task-item completed">
+      <div class="task-checkbox-wrapper">
+        <input type="checkbox" class="task-checkbox" id="task3" checked>
+        <label for="task3" class="checkbox-label"></label>
+      </div>
+      <div class="task-content">
+        <span class="task-title">Weekly Team Sync</span>
+        <div class="task-meta">
+          <span class="status-badge completed">Completed</span>
+          <span class="meta-date"><i class="fa-regular fa-calendar-check"></i> Mon, Sep 12</span>
+        </div>
+      </div>
+      <div class="task-actions">
+        <button class="btn-icon edit" aria-label="Edit">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="btn-icon delete" aria-label="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+
+  </ul>
+
+  <!-- Empty State (Hidden for demo, would be visible if list empty) -->
+  <div class="empty-state mt-4" style="display: none;">
+    <i class="fa-solid fa-clipboard-check empty-icon"></i>
+    <h5>No tasks found</h5>
+    <p class="mb-0 small">You're all caught up! Add a new task above.</p>
+  </div>
+
+</div>

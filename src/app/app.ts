@@ -1,5 +1,5 @@
 import { Component, signal } from '@angular/core';
-import { TodoApp } from "./todo-app/todo-app";
+import { TodoApp } from './todo-app/todo-app';
 
 @Component({
   selector: 'app-root',
