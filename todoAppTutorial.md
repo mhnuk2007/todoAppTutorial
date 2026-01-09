@@ -207,4 +207,38 @@ class TodoItemModel {
 - `Completed` - Task finished
 
 ---
+## **Step 8: Create Reactive State Using Signals**
+
+Inside your component class, define the core state:
+
+```typescript
+export class TodoApp implements OnInit {
+  newTask: TodoItemModel = new TodoItemModel();
+  
+  // Main signal - single source of truth
+  todoList = signal<TodoItemModel[]>([]);
+
+  // Filter and search properties
+  searchText: string = '';
+  filterStatus: string = 'All';
+  sortOrder: string = 'newest';
+  
+}
+```
+
+**Why signals?**
+- ⚡ Automatic change detection
+- 🎯 Simple, predictable updates
+- 🚀 Better performance than RxJS for simple state
+- 📦 No manual subscriptions needed
+
+**State properties explained:**
+- `newTask` - Holds the form data for add/edit
+- `todoList` - The signal containing all tasks
+- `searchText` - User's search input
+- `filterStatus` - Selected filter (All/Pending/In Progress/Completed)
+- `sortOrder` - Sort by newest or oldest first
+
+---
+
 
