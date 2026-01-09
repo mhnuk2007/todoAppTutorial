@@ -36,5 +36,20 @@ Your app will run at `http://localhost:4200`
 - run the app with 'ng serve' in terminal
 
 
+---
+## **Step 3: Create the Todo Component**
+
+Generate todo-app component:
+
+```bash
+ng generate component todo-app
+```
+
+This creates:
+- `todo-app.ts` - Component logic
+- `todo-app.html` - Template
+- `todo-app.css` - Styles
+- `todo-app.spec.ts` - Testing
+
 
 ---
