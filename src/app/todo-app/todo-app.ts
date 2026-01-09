@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './todo-app.html',
   styleUrl: './todo-app.css',
 })
-export class TodoApp implements OnInit{
+export class TodoApp implements OnInit {
   newTask: TodoItemModel = new TodoItemModel();
 
   // Main signal - single source of truth
@@ -32,13 +32,31 @@ export class TodoApp implements OnInit{
         createdDate: new Date(task.createdDate),
       }));
       this.todoList.set(TasksWithDates);
-
     }
   }
-addTask() {
+  addTask() {
+    // Validate input
+    if (!this.newTask.todoItem.trim()) {
+      return;
+    }
 
-  console.log(this.newTask.todoItem);
-}
+    // Generate unique ID and set creation date
+    const newDate = new Date();
+    this.newTask.todoItemId =
+      this.todoList().length + 1 + newDate.getDay() + newDate.getMilliseconds();
+    this.newTask.createdDate = newDate;
+
+    // Add task immutably
+    this.todoList.update((list)=>{
+      return [...list, {...this.newTask}]})
+
+    // Persist to storage
+    localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
+
+    // Reset form
+    this.newTask = new TodoItemModel();
+
+  }
 }
 
 class TodoItemModel {
