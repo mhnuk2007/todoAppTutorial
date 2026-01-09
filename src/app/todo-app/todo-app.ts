@@ -11,7 +11,13 @@ import { FormsModule } from '@angular/forms';
 export class TodoApp{
   newTask: TodoItemModel = new TodoItemModel();
 
+  // Main signal - single source of truth
   todoList = signal<TodoItemModel[]>([]);
+
+  // Filter and search properties
+  searchText: string = '';
+  filterStatus: string = 'All';
+  sortOrder: string = 'newest';
 
 }
 
