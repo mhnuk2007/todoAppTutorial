@@ -53,3 +53,31 @@ This creates:
 
 
 ---
+## **Step 4: Update app template *app.html* **
+Remove all contents of app.html except <router-outlet />
+
+At the top of `app.html`, add <app-todo-app/>
+
+```html
+<app-todo-app />
+```
+
+and import todo-app component in app.ts
+
+```typescript
+import { Component, signal } from '@angular/core';
+import { TodoApp } from "./todo-app/todo-app";
+
+@Component({
+  selector: 'app-root',
+  imports: [TodoApp],
+  templateUrl: './app.html',
+  styleUrl: './app.css'
+})
+export class App {
+  protected readonly title = signal('todoAppTutorial');
+}
+```
+
+---
+
