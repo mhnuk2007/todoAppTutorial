@@ -110,3 +110,68 @@ Add to component decorator:
 - Modern Angular best practice
 
 ---
+## **Step 6: Create the Todo App UI**
+
+I have generated a modern, professional UI for the Todo App with the help of Gemini, using the following prompt:
+```
+Design a clean, modern, and professional Todo Application UI using Bootstrap 5 and Font Awesome icons.
+
+Requirements:
+
+Provide static HTML and CSS only
+❌ Do not include JavaScript
+
+Use a modern dark theme with soft accent colors
+Clean spacing, rounded corners, and subtle shadows
+Smooth CSS-based animations and hover effects
+
+UI Sections to Include:
+
+Header
+- App title and short subtitle
+- Minimal icon-based branding
+
+Add / Edit Task Section
+- Text input to add a new task
+- Button to add or update a task
+- Dropdown to change task status (Pending, In Progress, Completed)
+
+Search & Controls
+- Search input field
+- Status filter dropdown
+- Sort dropdown (Newest / Oldest)
+
+Task List
+- List of todo items styled as cards
+- Each item displays:
+  - Task title
+  - Status badge
+  - Created date
+  - Action icons (edit, delete)
+- Completed tasks:
+  - Strikethrough text
+  - Muted styling
+
+Empty State
+- Friendly message when no tasks exist
+- Icon-based illustration
+
+Design Guidelines:
+- Use Bootstrap 5 utility classes where possible
+- Use Font Awesome icons consistently
+- Dark background with readable contrast
+- CSS animations for:
+  - Button hover
+  - Task hover
+  - Status badge transitions
+
+Output:
+- One HTML file
+- One CSS file
+- Fully responsive layout
+
+❗ Do not include JavaScript or Angular code.
+```
+Add generated html in todo-app.html and css in todo-app.css
+
+---
