@@ -55,7 +55,6 @@ export class TodoApp implements OnInit {
 
     // Reset form
     this.newTask = new TodoItemModel();
-
   }
 }
 

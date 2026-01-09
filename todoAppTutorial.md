@@ -314,3 +314,41 @@ Update the button in your template:
 Type something in the input box, click the "Add" button, and check the browser console. You should see your input logged!
 
 ---
+## **Step 10: Create Add Task Logic**
+
+Implement the method to add new tasks:
+
+```typescript
+addTask() {
+    // Validate input
+    if (!this.newTask.todoItem.trim()) {
+      return;
+    }
+
+    // Generate unique ID and set creation date
+    const newDate = new Date();
+    this.newTask.todoItemId =
+      this.todoList().length + 1 + newDate.getDay() + newDate.getMilliseconds();
+    this.newTask.createdDate = newDate;
+
+    // Add task immutably
+    this.todoList.update((list)=>{
+      return [...list, {...this.newTask}]})
+
+    // Persist to storage
+    localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
+
+    // Reset form
+    this.newTask = new TodoItemModel();
+  }
+```
+
+**Key principles:**
+- ✅ Always validate before saving
+- ✅ Each task has unique ID
+- ✅ Never mutate state directly (use spread operator `...`)
+- ✅ Create a copy of the task object
+- ✅ Save data to local storage
+- ✅ Reset form after successful save
+
+---
