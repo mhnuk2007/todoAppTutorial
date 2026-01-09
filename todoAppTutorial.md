@@ -352,3 +352,32 @@ addTask() {
 - ✅ Reset form after successful save
 
 ---
+## **Step 11: Generate Unique Task ID and Save to LocalStorage**
+
+Create a helper method for generating IDs:
+
+```typescript
+generateId() {
+  const newDate = new Date();
+    this.newTask.todoItemId =
+      this.todoList().length + 1 + newDate.getDay() + newDate.getMilliseconds();
+    this.newTask.createdDate = newDate;
+}
+```
+2. saveToLocalStorage()
+
+Persists the current task list to LocalStorage:
+
+```typescript
+saveToLocalStorage() {
+  localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
+}
+```
+
+**Why this approach?**
+- generateId() ensures each task has a reasonably unique ID for client-side usage.
+- saveToLocalStorage() keeps persistence logic separate from task addition logic.
+- Improves code readability and makes addTask() cleaner.
+- When adding a backend in the future, you can replace generateId() with server-generated IDs.
+
+---
