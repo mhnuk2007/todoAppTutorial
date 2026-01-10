@@ -53,6 +53,13 @@
     }
   </div>
 </div>
+@if(newTask.todoItemId > 0) {
+  <div class="mt-2">
+    <button (click)="onCancelEdit()" class="btn btn-sm btn-outline-secondary">
+      <i class="fa fa-times me-1"></i> Cancel Edit
+    </button>
+  </div>
+}
   </section>
 
   <!-- Controls Section -->

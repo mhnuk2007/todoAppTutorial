@@ -92,6 +92,10 @@ export class TodoApp implements OnInit {
   this.newTask = new TodoItemModel();
 }
 
+onCancelEdit() {
+  this.newTask = new TodoItemModel();
+}
+
 
   // Helper Methods
   generateId() {
