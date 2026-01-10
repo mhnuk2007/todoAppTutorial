@@ -302,6 +302,12 @@
     color: var(--text-secondary);
 }
 
+.task-item.editing {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
 /* --- Empty State --- */
 .empty-state {
     text-align: center;

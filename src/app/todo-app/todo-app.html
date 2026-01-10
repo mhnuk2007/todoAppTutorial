@@ -87,7 +87,9 @@
   <ul class="task-list">
     @if (todoList().length > 0) { @for (item of todoList(); track item.todoItemId) {
 
-    <li class="task-item" [class.completed]="item.status === 'Completed'">
+<li class="task-item"
+    [class.completed]="item.status === 'Completed'"
+    [class.editing]="item.todoItemId === newTask.todoItemId">
       <!-- Checkbox -->
       <div class="task-checkbox-wrapper">
         <input
