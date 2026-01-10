@@ -381,3 +381,174 @@ saveToLocalStorage() {
 - When adding a backend in the future, you can replace generateId() with server-generated IDs.
 
 ---
+# Step 12: Replace Static HTML with Dynamic Angular Template
+
+Now that we have our component logic in place, let's replace the static HTML with a dynamic Angular template that displays tasks from our `todoList` signal.
+
+## Understanding the Changes
+
+We're going to transform the hardcoded task items into a dynamic list that:
+- ✅ Automatically displays tasks from our signal
+- ✅ Shows/hides the empty state based on task count
+- ✅ Binds task properties to the UI
+- ✅ Applies conditional styling for completed tasks
+
+## Replace the Task List Section
+
+In `todo-app.html`, locate the `<ul class="task-list">` section and replace it with the following dynamic template:
+```html
+<ul class="task-list">
+
+  @if (todoList().length > 0) {
+
+    @for (item of todoList(); track item.todoItemId) {
+
+      <li class="task-item"
+          [class.completed]="item.status === 'Completed'">
+
+        <!-- Checkbox -->
+        <div class="task-checkbox-wrapper">
+          <input
+            type="checkbox"
+            class="task-checkbox"
+            [id]="'task-' + item.todoItemId"
+            [checked]="item.status === 'Completed'">
+
+          <label
+            [for]="'task-' + item.todoItemId"
+            class="checkbox-label"></label>
+        </div>
+
+        <!-- Content -->
+        <div class="task-content">
+          <span class="task-title">
+            {{ item.todoItem }}
+          </span>
+
+          <div class="task-meta">
+
+            <span
+              class="status-badge"
+              [ngClass]="{
+                'pending': item.status === 'Pending',
+                'progress': item.status === 'In Progress',
+                'completed': item.status === 'Completed'
+              }">
+              {{ item.status }}
+            </span>
+
+            <span class="meta-date">
+              <i class="fa-regular fa-calendar"></i>
+              {{ item.createdDate | date:'MMM d, y' }}
+            </span>
+
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="task-actions">
+          <button class="btn-icon edit" aria-label="Edit">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="btn-icon delete" aria-label="Delete">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        </div>
+
+      </li>
+    }
+  }
+
+</ul>
+
+<!-- Empty State -->
+@if (todoList().length === 0) {
+  <div class="empty-state mt-4">
+    <i class="fa-solid fa-clipboard-check empty-icon"></i>
+    <h5>No tasks found</h5>
+    <p class="mb-0 small">You're all caught up! Add a new task above.</p>
+  </div>
+}
+```
+
+## Understanding the Angular Syntax
+
+### 1. Control Flow Blocks (`@if`, `@for`)
+
+Angular 17+ introduced new control flow syntax:
+```html
+@if (todoList().length > 0) {
+  <!-- Show when tasks exist -->
+}
+```
+
+This replaces the older `*ngIf` directive with cleaner, more readable syntax.
+
+### 2. The `@for` Loop
+```html
+@for (item of todoList(); track item.todoItemId) {
+  <!-- Repeat for each task -->
+}
+```
+
+- Loops through each item in `todoList()`
+- `track item.todoItemId` helps Angular efficiently update the DOM
+- Similar to `*ngFor` but with better performance
+
+### 3. Property Binding (`[property]`)
+```html
+[id]="'task-' + item.todoItemId"
+[checked]="item.status === 'Completed'"
+```
+
+- Binds component data to HTML attributes
+- Dynamically sets values based on task properties
+
+### 4. Class Binding
+```html
+[class.completed]="item.status === 'Completed'"
+```
+
+- Conditionally adds the `completed` CSS class
+- Applies strikethrough styling to finished tasks
+
+### 5. NgClass Directive
+```html
+[ngClass]="{
+  'pending': item.status === 'Pending',
+  'progress': item.status === 'In Progress',
+  'completed': item.status === 'Completed'
+}"
+```
+
+- Applies different CSS classes based on task status
+- Changes badge color dynamically
+
+### 6. Interpolation (`{{ }}`)
+```html
+{{ item.todoItem }}
+{{ item.status }}
+```
+
+- Displays component data in the template
+- Automatically updates when signal changes
+
+### 7. Pipe Operator (`|`)
+```html
+{{ item.createdDate | date:'MMM d, y' }}
+```
+
+- Formats the date for display
+- Transforms raw data into user-friendly format
+
+## Test It Out
+
+Now when you add a task, it should:
+1. ✅ Appear in the list immediately
+2. ✅ Display the correct status badge
+3. ✅ Show formatted creation date
+4. ✅ Hide the empty state message
+
+Try adding multiple tasks with different statuses to see them render dynamically!
+
+---

@@ -34,6 +34,7 @@ export class TodoApp implements OnInit {
       this.todoList.set(TasksWithDates);
     }
   }
+  // Add Task
   addTask() {
     // Validate input
     if (!this.newTask.todoItem.trim()) {
@@ -55,6 +56,44 @@ export class TodoApp implements OnInit {
     this.newTask = new TodoItemModel();
   }
 
+  //Update Task
+  // 1.Edit Task
+  editTask(data: TodoItemModel) {
+  // Create a deep copy to avoid reference issues
+  this.newTask = {
+    ...data,
+    createdDate: new Date(data.createdDate)
+  };
+
+  // Optional: Scroll to top to show the edit form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+  // 2.Update Task
+  updateTask() {
+  // Validate input
+  if (!this.newTask.todoItem.trim()) {
+    return;
+  }
+
+  // Update the task in the list
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === this.newTask.todoItemId
+        ? { ...this.newTask }
+        : item
+    );
+  });
+
+  // Save to localStorage
+  this.saveToLocalStorage();
+
+  // Reset form to add mode
+  this.newTask = new TodoItemModel();
+}
+
+
+  // Helper Methods
   generateId() {
     const newDate = new Date();
     this.newTask.todoItemId =
@@ -62,7 +101,7 @@ export class TodoApp implements OnInit {
     this.newTask.createdDate = newDate;
   }
 
-  
+
 
   saveToLocalStorage() {
     localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
@@ -79,6 +118,6 @@ class TodoItemModel {
     this.todoItemId = 0;
     this.todoItem = '';
     this.createdDate = new Date();
-    this.status = 'pending';
+    this.status = 'Pending';
   }
 }

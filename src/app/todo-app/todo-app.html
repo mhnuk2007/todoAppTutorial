@@ -1,5 +1,4 @@
 <div class="app-container">
-
   <!-- Header -->
   <header class="app-header">
     <div class="brand-icon">
@@ -11,46 +10,58 @@
 
   <!-- Add Task Section -->
   <section class="custom-card">
+<div class="row g-3 align-items-center">
+  <!-- Task Input - Always visible -->
+  <div [ngClass]="newTask.todoItemId == 0 ? 'col-md-9' : 'col-md-6'">
+    <label for="taskInput" class="visually-hidden">New Task</label>
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="fa-solid fa-plus"></i>
+      </span>
+      <input
+        type="text"
+        [(ngModel)]="newTask.todoItem"
+        class="form-control"
+        placeholder="What needs to be done?">
+    </div>
+  </div>
 
-      <div class="row g-3 align-items-center">
-        <div class="col-md-7">
-          <label for="taskInput" class="visually-hidden">New Task</label>
-          <div class="input-group">
-            <span class="input-group-text">
-              <i class="fa-solid fa-plus"></i>
-            </span>
-            <input
-              type="text"
-              [(ngModel)]="newTask.todoItem"
-              class="form-control"
+  <!-- Status Selector - Only visible when editing -->
+  @if(newTask.todoItemId > 0) {
+    <div class="col-md-3">
+      <label for="statusSelect" class="visually-hidden">Status</label>
+      <select [(ngModel)]="newTask.status" class="form-select" id="statusSelect">
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+  }
 
-              placeholder="What needs to be done?">
-          </div>
-        </div>
-        <div class="col-6 col-md-3">
-          <label for="statusSelect" class="visually-hidden">Status</label>
-          <select class="form-select" id="statusSelect">
-            <option selected value="pending">Pending</option>
-            <option value="progress">In Progress</option>
-            <option value="completed">Completed</option>
-          </select>
-        </div>
-        <div class="col-6 col-md-2">
-          <button (click)="addTask()" type="submit" class="btn btn-primary-custom w-100">
-            Add
-          </button>
-        </div>
-      </div>
+  <!-- Action Button - Changes based on mode -->
+  <div class="col-md-3">
+    @if(newTask.todoItemId == 0) {
+      <!-- Add Mode -->
+      <button (click)="addTask()" type="submit" class="btn btn-primary-custom w-100">
+        Add
+      </button>
+    } @else {
+      <!-- Edit Mode -->
+      <button (click)="updateTask()" type="submit" class="btn btn-warning w-100">
+        Update
+      </button>
+    }
+  </div>
+</div>
   </section>
 
   <!-- Controls Section -->
   <div class="d-flex justify-content-between align-items-center mb-4 filters-group">
     <div class="position-relative flex-grow-1 me-md-3">
-      <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-      <input
-        type="text"
-        class="form-control ps-5"
-        placeholder="Search tasks...">
+      <i
+        class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"
+      ></i>
+      <input type="text" class="form-control ps-5" placeholder="Search tasks..." />
     </div>
     <div class="d-flex gap-2 w-100 w-md-auto">
       <select class="form-select w-auto">
@@ -66,77 +77,66 @@
     </div>
   </div>
 
-<ul class="task-list">
+  <ul class="task-list">
+    @if (todoList().length > 0) { @for (item of todoList(); track item.todoItemId) {
 
-  @if (todoList().length > 0) {
+    <li class="task-item" [class.completed]="item.status === 'Completed'">
+      <!-- Checkbox -->
+      <div class="task-checkbox-wrapper">
+        <input
+          type="checkbox"
+          class="task-checkbox"
+          [id]="'task-' + item.todoItemId"
+          [checked]="item.status === 'Completed'"
+        />
 
-    @for (item of todoList(); track item.todoItemId) {
+        <label [for]="'task-' + item.todoItemId" class="checkbox-label"></label>
+      </div>
 
-      <li class="task-item"
-          [class.completed]="item.status === 'Completed'">
+      <!-- Content -->
+      <div class="task-content">
+        <span class="task-title">
+          {{ item.todoItem }}
+        </span>
 
-        <!-- Checkbox -->
-        <div class="task-checkbox-wrapper">
-          <input
-            type="checkbox"
-            class="task-checkbox"
-            [id]="'task-' + item.todoItemId"
-            [checked]="item.status === 'Completed'">
-
-          <label
-            [for]="'task-' + item.todoItemId"
-            class="checkbox-label"></label>
-        </div>
-
-        <!-- Content -->
-        <div class="task-content">
-          <span class="task-title">
-            {{ item.todoItem }}
+        <div class="task-meta">
+          <span
+            class="status-badge"
+            [ngClass]="{
+              pending: item.status === 'Pending',
+              progress: item.status === 'In Progress',
+              completed: item.status === 'Completed'
+            }"
+          >
+            {{ item.status }}
           </span>
 
-          <div class="task-meta">
-
-            <span
-              class="status-badge"
-              [ngClass]="{
-                'pending': item.status === 'Pending',
-                'progress': item.status === 'In Progress',
-                'completed': item.status === 'Completed'
-              }">
-              {{ item.status }}
-            </span>
-
-            <span class="meta-date">
-              <i class="fa-regular fa-calendar"></i>
-              {{ item.createdDate | date:'MMM d, y' }}
-            </span>
-
-          </div>
+          <span class="meta-date">
+            <i class="fa-regular fa-calendar"></i>
+            {{ item.createdDate | date : 'MMM d, y' }}
+          </span>
         </div>
+      </div>
 
-        <!-- Actions -->
-        <div class="task-actions">
-          <button class="btn-icon edit" aria-label="Edit">
-            <i class="fa-solid fa-pen"></i>
-          </button>
-          <button class="btn-icon delete" aria-label="Delete">
-            <i class="fa-solid fa-trash"></i>
-          </button>
-        </div>
+      <!-- Actions -->
+      <div class="task-actions">
+        <button (click)="editTask(item)" class="btn-icon edit" aria-label="Edit">
+          <i class="fa-solid fa-pen"></i>
+        </button>
+        <button class="btn-icon delete" aria-label="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>
+      </div>
+    </li>
+    } }
+  </ul>
 
-      </li>
-    }
-  }
-
-</ul>
-
-<!-- Empty State -->
-@if (todoList().length === 0) {
+  <!-- Empty State -->
+  @if (todoList().length === 0) {
   <div class="empty-state mt-4">
     <i class="fa-solid fa-clipboard-check empty-icon"></i>
     <h5>No tasks found</h5>
     <p class="mb-0 small">You're all caught up! Add a new task above.</p>
   </div>
-}
-
+  }
 </div>
