@@ -62,6 +62,8 @@ export class TodoApp implements OnInit {
     this.newTask.createdDate = newDate;
   }
 
+  
+
   saveToLocalStorage() {
     localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
   }
