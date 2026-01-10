@@ -552,3 +552,280 @@ Now when you add a task, it should:
 Try adding multiple tasks with different statuses to see them render dynamically!
 
 ---
+# Step 13: Implement Edit/Update Task Functionality
+
+Now that users can add tasks, let's enable them to edit existing tasks. This step will allow users to click an edit button, modify the task details and status, then save the changes.
+
+## Understanding the Edit Flow
+
+The edit functionality works in three stages:
+1. **Edit Mode**: User clicks edit button → task data loads into the form
+2. **Update Mode**: User modifies the task and/or status, then clicks "Update"
+3. **Cancel Mode**: User can cancel editing and return to add mode
+
+## 1: Add the Edit Button Click Handler
+
+In `todo-app.html`, update the edit button to call the `editTask()` function:
+
+```html
+<button (click)="editTask(item)" class="btn-icon edit" aria-label="Edit">
+  <i class="fa-solid fa-pen"></i>
+</button>
+```
+
+## 2: Create the `editTask()` Method
+
+Add this method to `todo-app.ts`:
+
+```typescript
+editTask(data: TodoItemModel) {
+  // Create a deep copy to avoid reference issues
+  this.newTask = {
+    ...data,
+    createdDate: new Date(data.createdDate)
+  };
+
+  // Optional: Scroll to top to show the edit form
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+```
+
+**Why create a copy?**
+- Using the spread operator `{...data}` creates a new object
+- Prevents direct mutation of the original task
+- Ensures the form is independent from the list item
+- The `createdDate` needs special handling to ensure it's a Date object
+
+**What happens when you click edit?**
+1. Task data is copied to `newTask`
+2. Form fields auto-populate via `[(ngModel)]` binding
+3. Page scrolls to top (optional UX improvement)
+4. User can now modify the task
+
+## 3: Modify the Template for Edit Mode
+
+Update the "Add Task" section in `todo-app.html` to show different UI based on whether we're adding or editing:
+
+### Show Status Selector Only in Edit Mode
+
+```html
+<div class="row g-3 align-items-center">
+  <!-- Task Input - Always visible -->
+  <div [ngClass]="newTask.todoItemId == 0 ? 'col-md-9' : 'col-md-5'">
+    <label for="taskInput" class="visually-hidden">New Task</label>
+    <div class="input-group">
+      <span class="input-group-text">
+        <i class="fa-solid fa-plus"></i>
+      </span>
+      <input
+        type="text"
+        [(ngModel)]="newTask.todoItem"
+        class="form-control"
+        placeholder="What needs to be done?">
+    </div>
+  </div>
+
+  <!-- Status Selector - Only visible when editing -->
+  @if(newTask.todoItemId > 0) {
+    <div class="col-md-4">
+      <label for="statusSelect" class="visually-hidden">Status</label>
+      <select [(ngModel)]="newTask.status" class="form-select" id="statusSelect">
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
+      </select>
+    </div>
+  }
+
+  <!-- Action Button - Changes based on mode -->
+  <div class="col-md-3">
+    @if(newTask.todoItemId == 0) {
+      <!-- Add Mode -->
+      <button (click)="addTask()" type="submit" class="btn btn-primary-custom w-100">
+        Add
+      </button>
+    } @else {
+      <!-- Edit Mode -->
+      <button (click)="updateTask()" type="submit" class="btn btn-warning w-100">
+        Update
+      </button>
+    }
+  </div>
+</div>
+```
+
+**Understanding the Dynamic Layout:**
+
+1. **Task Input Width Changes:**
+   - Add mode: Takes 9 columns (wider, no status needed)
+   - Edit mode: Takes 7 columns (makes room for status dropdown)
+   - Uses `[ngClass]` to dynamically adjust based on `newTask.todoItemId`
+
+2. **Status Selector Visibility:**
+   - Hidden when adding (`newTask.todoItemId == 0`) - new tasks are always "Pending"
+   - Shown when editing (`newTask.todoItemId > 0`) - allows changing status
+   - Bound to `newTask.status` via `[(ngModel)]`
+
+3. **Button Changes:**
+   - Add mode: Shows "Add" button, calls `addTask()`
+   - Edit mode: Shows "Update" button, calls `updateTask()`
+   - The `todoItemId` serves as our mode indicator (0 = add, >0 = edit)
+
+## 4: Create the `updateTask()` Method
+
+Add this method to handle the update operation:
+
+```typescript
+updateTask() {
+  // Validate input
+  if (!this.newTask.todoItem.trim()) {
+    return;
+  }
+
+  // Update the task in the list
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === this.newTask.todoItemId
+        ? { ...this.newTask }
+        : item
+    );
+  });
+
+  // Save to localStorage
+  this.saveToLocalStorage();
+
+  // Reset form to add mode
+  this.newTask = new TodoItemModel();
+}
+```
+
+**How the update works:**
+1. **Validation**: Ensures the task text isn't empty
+2. **Immutable Update**: Uses `map()` to create a new array
+3. **Conditional Replace**: Replaces only the matching task by ID
+4. **Persist**: Saves the updated list to localStorage
+5. **Reset**: Clears the form and returns to add mode
+
+**Why use `map()` instead of direct assignment?**
+```typescript
+// ❌ Don't do this (mutates state directly)
+const task = this.todoList().find(t => t.todoItemId === id);
+task.todoItem = newValue;
+
+// ✅ Do this (immutable update)
+this.todoList.update((list) => 
+  list.map((item) => 
+    item.todoItemId === id ? { ...this.newTask } : item
+  )
+);
+```
+
+## 5: Add Cancel Edit Functionality (Optional but Recommended)
+
+Add a cancel button below the form when in edit mode:
+
+```html
+@if(newTask.todoItemId > 0) {
+  <div class="mt-2">
+    <button (click)="onCancelEdit()" class="btn btn-sm btn-outline-secondary">
+      <i class="fa fa-times me-1"></i> Cancel Edit
+    </button>
+  </div>
+}
+```
+
+Add the handler method:
+
+```typescript
+onCancelEdit() {
+  this.newTask = new TodoItemModel();
+}
+```
+
+**Why add cancel functionality?**
+- Users might click edit by mistake
+- Provides a clear way to exit edit mode
+- Improves user experience
+
+## 6: Visual Feedback - Highlight the Editing Task (Optional)
+
+To help users see which task they're editing, add a visual indicator on the task item:
+
+In your task list, add a conditional class:
+
+```html
+<li class="task-item"
+    [class.completed]="item.status === 'Completed'"
+    [class.editing]="item.todoItemId === newTask.todoItemId">
+```
+
+Then add this CSS to `todo-app.css`:
+
+```css
+.task-item.editing {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+```
+
+This will highlight the task being edited with a yellow/amber border and background.
+
+## Complete Code Summary
+
+### In `todo-app.ts`:
+
+```typescript
+// Edit: Load task into form
+editTask(data: TodoItemModel) {
+  this.newTask = {
+    ...data,
+    createdDate: new Date(data.createdDate)
+  };
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Update: Save changes
+updateTask() {
+  if (!this.newTask.todoItem.trim()) {
+    return;
+  }
+
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === this.newTask.todoItemId
+        ? { ...this.newTask }
+        : item
+    );
+  });
+
+  this.saveToLocalStorage();
+  this.newTask = new TodoItemModel();
+}
+
+// Cancel: Exit edit mode
+onCancelEdit() {
+  this.newTask = new TodoItemModel();
+}
+```
+
+## Test the Functionality
+
+1. ✅ Add a few tasks
+2. ✅ Click the edit button on any task
+3. ✅ Verify the form populates with task data
+4. ✅ Modify the task text and/or status
+5. ✅ Click "Update" and verify changes appear
+6. ✅ Try canceling an edit
+7. ✅ Refresh the page and verify changes persist
+
+## Key Concepts Learned
+
+- **Conditional Rendering**: Using `@if/@else` to show different buttons based on state
+- **Deep Copying**: Creating independent copies of objects
+- **Immutable Updates**: Using `map()` for state updates
+- **Two-way Binding**: How `[(ngModel)]` keeps form and data in sync
+- **User Experience**: Smooth scrolling and cancel options improve usability
+
+---
+
