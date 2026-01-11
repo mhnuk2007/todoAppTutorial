@@ -59,58 +59,73 @@ export class TodoApp implements OnInit {
   //Update Task
   // 1.Edit Task
   editTask(data: TodoItemModel) {
-  // Create a deep copy to avoid reference issues
-  this.newTask = {
-    ...data,
-    createdDate: new Date(data.createdDate)
-  };
+    // Create a deep copy to avoid reference issues
+    this.newTask = {
+      ...data,
+      createdDate: new Date(data.createdDate),
+    };
 
-  // Optional: Scroll to top to show the edit form
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    // Optional: Scroll to top to show the edit form
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   // 2.Update Task
   updateTask() {
-  // Validate input
-  if (!this.newTask.todoItem.trim()) {
-    return;
+    // Validate input
+    if (!this.newTask.todoItem.trim()) {
+      return;
+    }
+
+    // Update the task in the list
+    this.todoList.update((list) => {
+      return list.map((item) =>
+        item.todoItemId === this.newTask.todoItemId ? { ...this.newTask } : item
+      );
+    });
+
+    // Save to localStorage
+    this.saveToLocalStorage();
+
+    // Reset form to add mode
+    this.newTask = new TodoItemModel();
   }
 
-  // Update the task in the list
-  this.todoList.update((list) => {
+  onCancelEdit() {
+    this.newTask = new TodoItemModel();
+  }
+  // Delete task
+  deleteTask(todoItemId: number) {
+    // Confirm before deleting
+    if (confirm('Are you sure you want to delete this task?')) {
+      this.todoList.update((list) => {
+        return list.filter((item) => item.todoItemId !== todoItemId);
+      });
+
+      this.saveToLocalStorage();
+
+      // If we were editing this task, clear the form
+      if (this.newTask.todoItemId === todoItemId) {
+        this.newTask = new TodoItemModel();
+      }
+    }
+  }
+
+  // Toggle Complete Task
+  toggleComplete(task: TodoItemModel) {
+    this.todoList.update((list) => {
     return list.map((item) =>
-      item.todoItemId === this.newTask.todoItemId
-        ? { ...this.newTask }
+      item.todoItemId === task.todoItemId
+        ? {
+            ...item,
+            status: item.status === 'Completed' ? 'Pending' : 'Completed'
+          }
         : item
     );
   });
 
-  // Save to localStorage
   this.saveToLocalStorage();
-
-  // Reset form to add mode
-  this.newTask = new TodoItemModel();
-}
-
-onCancelEdit() {
-  this.newTask = new TodoItemModel();
-}
-// Delete task
-deleteTask(todoItemId: number) {
-  // Confirm before deleting
-  if (confirm('Are you sure you want to delete this task?')) {
-    this.todoList.update((list) => {
-      return list.filter((item) => item.todoItemId !== todoItemId);
-    });
-
-    this.saveToLocalStorage();
-
-    // If we were editing this task, clear the form
-    if (this.newTask.todoItemId === todoItemId) {
-      this.newTask = new TodoItemModel();
-    }
   }
-}
+
 
   // Helper Methods
   generateId() {
@@ -119,8 +134,6 @@ deleteTask(todoItemId: number) {
       this.todoList().length + 1 + newDate.getDay() + newDate.getMilliseconds();
     this.newTask.createdDate = newDate;
   }
-
-
 
   saveToLocalStorage() {
     localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
