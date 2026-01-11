@@ -829,3 +829,242 @@ onCancelEdit() {
 
 ---
 
+# Step 14: Delete Task
+
+Let's implement the ability to delete individual tasks with a confirmation dialog to prevent accidental deletions.
+
+## Understanding the Delete Flow
+
+When a user clicks the delete button:
+1. ⚠️ A confirmation dialog appears
+2. ✅ If user confirms → task is removed
+3. ❌ If user cancels → nothing happens
+4. 💾 Changes are saved to localStorage
+5. 🔄 If the deleted task was being edited, the form clears
+
+## Step 1: Add Delete Button Click Handler
+
+In `todo-app.html`, update the delete button in the task actions:
+
+```html
+<!-- Actions -->
+<div class="task-actions">
+  <button (click)="editTask(item)" class="btn-icon edit" aria-label="Edit">
+    <i class="fa-solid fa-pen"></i>
+  </button>
+  <button (click)="deleteTask(item.todoItemId)" class="btn-icon delete" aria-label="Delete">
+    <i class="fa-solid fa-trash"></i>
+  </button>
+</div>
+```
+
+**What changed:**
+- Added `(click)="deleteTask(item.todoItemId)"` event binding
+- Passes only the `todoItemId` (we don't need the entire object)
+
+## Step 2: Create the `deleteTask()` Method
+
+Add this method to `todo-app.ts`:
+
+```typescript
+deleteTask(todoItemId: number) {
+  // Confirm before deleting
+  if (confirm('Are you sure you want to delete this task?')) {
+    this.todoList.update((list) => {
+      return list.filter((item) => item.todoItemId !== todoItemId);
+    });
+    
+    this.saveToLocalStorage();
+    
+    // If we were editing this task, clear the form
+    if (this.newTask.todoItemId === todoItemId) {
+      this.newTask = new TodoItemModel();
+    }
+  }
+}
+```
+
+## Understanding Each Part
+
+### 1. Confirmation Dialog
+
+```typescript
+if (confirm('Are you sure you want to delete this task?')) {
+  // Delete logic
+}
+```
+
+- `confirm()` is a native browser function
+- Shows a dialog with "OK" and "Cancel" buttons
+- Returns `true` if user clicks "OK"
+- Returns `false` if user clicks "Cancel"
+- Code only runs if user confirms
+
+**Why use confirmation?**
+- Prevents accidental deletions
+- No "undo" feature, so this is the safety net
+- Standard UX practice for destructive actions
+
+### 2. Filter Method for Deletion
+
+```typescript
+this.todoList.update((list) => {
+  return list.filter((item) => item.todoItemId !== todoItemId);
+});
+```
+
+**How `filter()` works for deletion:**
+- Creates a new array
+- Includes only items where the condition is `true`
+- Excludes items where `item.todoItemId !== todoItemId` is `false`
+- The task with matching ID is excluded (deleted)
+
+**Why use `filter()` instead of `splice()`?**
+
+```typescript
+// ❌ Don't do this (mutates state directly)
+const index = this.todoList().findIndex(t => t.todoItemId === id);
+this.todoList().splice(index, 1);
+
+// ✅ Do this (immutable deletion)
+this.todoList.update((list) => 
+  list.filter((item) => item.todoItemId !== id)
+);
+```
+
+### 3. Clear Edit Form Safety Check
+
+```typescript
+// If we were editing this task, clear the form
+if (this.newTask.todoItemId === todoItemId) {
+  this.newTask = new TodoItemModel();
+}
+```
+
+**Why is this needed?**
+
+Imagine this scenario:
+1. User clicks "Edit" on Task #5
+2. Form loads with Task #5 data
+3. User clicks "Delete" on Task #5
+4. Task #5 is deleted from the list
+5. **Without this check:** Form still shows Task #5 data
+6. **Problem:** User might click "Update" but task doesn't exist!
+
+**Solution:**
+- Check if deleted task is currently being edited
+- If yes, reset the form to add mode
+- Prevents trying to update a non-existent task
+
+### 4. Persist to LocalStorage
+
+```typescript
+this.saveToLocalStorage();
+```
+
+Ensures the deletion is permanent across page refreshes.
+
+## Visual Feedback in the UI
+
+The delete button should have hover effects. Verify this CSS exists in `todo-app.css`:
+
+```css
+.btn-icon.delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+```
+
+This gives visual feedback when hovering over the delete button.
+
+## Test the Delete Functionality
+
+Follow these steps to thoroughly test:
+
+1. ✅ **Basic deletion:**
+   - Add 3-4 tasks
+   - Click delete on one task
+   - Verify confirmation dialog appears
+   - Click "Cancel" → task should remain
+   - Click delete again, then "OK" → task should disappear
+
+2. ✅ **Edit mode safety:**
+   - Add a task
+   - Click "Edit" on that task
+   - Verify form populates
+   - Click "Delete" on the same task
+   - Click "OK" in confirmation
+   - Verify task is deleted AND form resets to add mode
+
+3. ✅ **Persistence:**
+   - Delete a task
+   - Refresh the page
+   - Verify the deleted task is still gone
+
+4. ✅ **Empty state:**
+   - Delete all tasks one by one
+   - Verify empty state message appears
+
+## Common Issues and Solutions
+
+### Issue: Confirmation dialog doesn't appear
+**Solution:** Check browser settings - some browsers block `confirm()` dialogs. Try in a different browser.
+
+### Issue: Task doesn't disappear after deletion
+**Solution:** Verify:
+- `deleteTask()` method is called (add `console.log()`)
+- `saveToLocalStorage()` is being called
+- Signal update syntax is correct
+
+### Issue: Can still edit deleted task
+**Solution:** Ensure the form clearing logic is in place:
+```typescript
+if (this.newTask.todoItemId === todoItemId) {
+  this.newTask = new TodoItemModel();
+}
+```
+
+## Complete Code
+
+### In `todo-app.html`:
+```html
+<div class="task-actions">
+  <button (click)="editTask(item)" class="btn-icon edit" aria-label="Edit">
+    <i class="fa-solid fa-pen"></i>
+  </button>
+  <button (click)="deleteTask(item.todoItemId)" class="btn-icon delete" aria-label="Delete">
+    <i class="fa-solid fa-trash"></i>
+  </button>
+</div>
+```
+
+### In `todo-app.ts`:
+```typescript
+deleteTask(todoItemId: number) {
+  // Confirm before deleting
+  if (confirm('Are you sure you want to delete this task?')) {
+    this.todoList.update((list) => {
+      return list.filter((item) => item.todoItemId !== todoItemId);
+    });
+    
+    this.saveToLocalStorage();
+    
+    // If we were editing this task, clear the form
+    if (this.newTask.todoItemId === todoItemId) {
+      this.newTask = new TodoItemModel();
+    }
+  }
+}
+```
+
+## Key Concepts Learned
+
+- **Confirmation Dialogs**: Using `confirm()` for destructive actions
+- **Immutable Deletion**: Using `filter()` instead of `splice()`
+- **Edge Case Handling**: Clearing edit form when deleting current task
+- **User Safety**: Always confirm before permanent deletions
+- **Signal Updates**: How `filter()` works with Angular signals
+
+---
+
+**Next Step:** We'll implement the toggle completion feature to quickly mark tasks as done.
