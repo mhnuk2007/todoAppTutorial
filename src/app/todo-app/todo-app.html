@@ -97,6 +97,7 @@
           class="task-checkbox"
           [id]="'task-' + item.todoItemId"
           [checked]="item.status === 'Completed'"
+          (change)="toggleComplete(item)"
         />
 
         <label [for]="'task-' + item.todoItemId" class="checkbox-label"></label>
