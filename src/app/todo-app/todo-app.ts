@@ -95,7 +95,22 @@ export class TodoApp implements OnInit {
 onCancelEdit() {
   this.newTask = new TodoItemModel();
 }
+// Delete task
+deleteTask(todoItemId: number) {
+  // Confirm before deleting
+  if (confirm('Are you sure you want to delete this task?')) {
+    this.todoList.update((list) => {
+      return list.filter((item) => item.todoItemId !== todoItemId);
+    });
 
+    this.saveToLocalStorage();
+
+    // If we were editing this task, clear the form
+    if (this.newTask.todoItemId === todoItemId) {
+      this.newTask = new TodoItemModel();
+    }
+  }
+}
 
   // Helper Methods
   generateId() {

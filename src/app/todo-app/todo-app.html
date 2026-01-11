@@ -132,7 +132,7 @@
         <button (click)="editTask(item)" class="btn-icon edit" aria-label="Edit">
           <i class="fa-solid fa-pen"></i>
         </button>
-        <button class="btn-icon delete" aria-label="Delete">
+        <button (click)="deleteTask(item.todoItemId)"class="btn-icon delete" aria-label="Delete">
           <i class="fa-solid fa-trash"></i>
         </button>
       </div>
