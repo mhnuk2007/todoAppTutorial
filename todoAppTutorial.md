@@ -1067,4 +1067,278 @@ deleteTask(todoItemId: number) {
 
 ---
 
-**Next Step:** We'll implement the toggle completion feature to quickly mark tasks as done.
+# Step 15: Toggle Task Completion
+
+Let's add the ability for users to quickly mark tasks as complete or incomplete by clicking the checkbox. This provides a fast way to update task status without entering edit mode.
+
+## Understanding Toggle Functionality
+
+When a user clicks the checkbox:
+- ✅ Completed tasks → become Pending
+- ⏸️ Pending/In Progress tasks → become Completed
+- The UI updates instantly via signals
+- Changes persist to localStorage
+
+## Step 1: Update the Checkbox Template
+
+In `todo-app.html`, add the `(change)` event handler to the checkbox:
+
+```html
+<!-- Checkbox -->
+<div class="task-checkbox-wrapper">
+  <input
+    type="checkbox"
+    class="task-checkbox"
+    [id]="'task-' + item.todoItemId"
+    [checked]="item.status === 'Completed'"
+    (change)="toggleComplete(item)"
+  />
+
+  <label [for]="'task-' + item.todoItemId" class="checkbox-label"></label>
+</div>
+```
+
+**Key additions:**
+- `(change)="toggleComplete(item)"` - Calls the toggle function when checkbox state changes
+- `[checked]="item.status === 'Completed'"` - Already present, ensures checkbox reflects current status
+
+## Step 2: Create the `toggleComplete()` Method
+
+Add this method to `todo-app.ts`:
+
+```typescript
+toggleComplete(task: TodoItemModel) {
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === task.todoItemId
+        ? { 
+            ...item, 
+            status: item.status === 'Completed' ? 'Pending' : 'Completed' 
+          }
+        : item
+    );
+  });
+  
+  this.saveToLocalStorage();
+}
+```
+
+## Understanding Each Part
+
+### 1. The Update Pattern
+
+```typescript
+this.todoList.update((list) => {
+  return list.map((item) => /* ... */);
+});
+```
+
+- Uses `update()` to modify the signal
+- Uses `map()` to create a new array (immutable)
+- Returns transformed version of each item
+
+### 2. Finding the Target Task
+
+```typescript
+item.todoItemId === task.todoItemId
+  ? { /* update this item */ }
+  : item  // keep other items unchanged
+```
+
+- Ternary operator checks if this is the task to toggle
+- If match found → create updated version
+- If no match → return item unchanged
+
+### 3. The Toggle Logic
+
+```typescript
+{
+  ...item,  // Copy all properties
+  status: item.status === 'Completed' ? 'Pending' : 'Completed'
+}
+```
+
+**How the toggle works:**
+- `...item` spreads all existing properties (id, text, date, etc.)
+- `status:` overrides only the status property
+- If current status is 'Completed' → set to 'Pending'
+- Otherwise (Pending or In Progress) → set to 'Completed'
+
+**Why toggle to "Pending" instead of previous status?**
+- Simpler logic and predictable behavior
+- Most common workflow: Pending → Completed → Pending
+- Users can use edit mode to set "In Progress" if needed
+
+### 4. Persist Changes
+
+```typescript
+this.saveToLocalStorage();
+```
+
+Ensures the completion status survives page refreshes.
+
+## The Reactive Update Flow
+
+Here's what happens when you click a checkbox:
+
+```
+1. User clicks checkbox
+   ↓
+2. (change) event fires
+   ↓
+3. toggleComplete(task) is called
+   ↓
+4. todoList.update() creates new array with map()
+   ↓
+5. Angular detects signal change
+   ↓
+6. Template automatically re-renders
+   ↓
+7. Checkbox state updates via [checked] binding
+   ↓
+8. CSS classes update via [class.completed] binding
+   ↓
+9. Strikethrough/opacity changes apply
+   ↓
+10. Data saved to localStorage
+```
+
+**Benefits of this approach:**
+- ⚡ Instant UI updates (no manual DOM manipulation)
+- 🎯 Single source of truth (the signal)
+- 🔄 Automatic re-rendering
+- 🧹 Clean, declarative code
+
+## Verify Completed Task Styling
+
+Make sure the completed styling is working. The template should have:
+
+```html
+<li class="task-item"
+    [class.completed]="item.status === 'Completed'"
+    [class.editing]="item.todoItemId === newTask.todoItemId">
+```
+
+And the CSS should include (already in your `todo-app.css`):
+
+```css
+/* Completed Task Styling */
+.task-item.completed {
+  opacity: 0.7;
+  background-color: rgba(30, 30, 36, 0.5);
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+}
+```
+
+This ensures completed tasks have:
+- ✓ Strikethrough text
+- ✓ Reduced opacity (70%)
+- ✓ Dimmed background
+
+## Test the Toggle Functionality
+
+Follow these steps to test:
+
+1. ✅ **Basic toggle:**
+   - Add a new task (status will be "Pending")
+   - Click the checkbox
+   - Verify: strikethrough appears, badge shows "Completed"
+   - Click checkbox again
+   - Verify: strikethrough disappears, badge shows "Pending"
+
+2. ✅ **Different statuses:**
+   - Edit a task and set status to "In Progress"
+   - Click the checkbox
+   - Verify: it becomes "Completed"
+   - Click again
+   - Verify: it becomes "Pending" (not "In Progress")
+
+3. ✅ **Persistence:**
+   - Toggle a task to completed
+   - Refresh the page
+   - Verify: task still shows as completed
+
+4. ✅ **Multiple tasks:**
+   - Add 5 tasks
+   - Toggle 2-3 to completed
+   - Verify: only the toggled tasks show strikethrough
+   - Verify: "Completed" badge only on completed tasks
+
+## Advanced Enhancement (Optional)
+
+If you want to prevent editing a task while toggling it, add this check:
+
+```typescript
+toggleComplete(task: TodoItemModel) {
+  // Cancel edit mode if toggling the task being edited
+  if (this.newTask.todoItemId === task.todoItemId) {
+    this.newTask = new TodoItemModel();
+  }
+
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === task.todoItemId
+        ? { 
+            ...item, 
+            status: item.status === 'Completed' ? 'Pending' : 'Completed' 
+          }
+        : item
+    );
+  });
+  
+  this.saveToLocalStorage();
+}
+```
+
+This prevents confusion by clearing the edit form when toggling a task that's currently being edited.
+
+## Complete Code
+
+### In `todo-app.html`:
+```html
+<div class="task-checkbox-wrapper">
+  <input
+    type="checkbox"
+    class="task-checkbox"
+    [id]="'task-' + item.todoItemId"
+    [checked]="item.status === 'Completed'"
+    (change)="toggleComplete(item)"
+  />
+  <label [for]="'task-' + item.todoItemId" class="checkbox-label"></label>
+</div>
+```
+
+### In `todo-app.ts`:
+```typescript
+toggleComplete(task: TodoItemModel) {
+  this.todoList.update((list) => {
+    return list.map((item) =>
+      item.todoItemId === task.todoItemId
+        ? { 
+            ...item, 
+            status: item.status === 'Completed' ? 'Pending' : 'Completed' 
+          }
+        : item
+    );
+  });
+  
+  this.saveToLocalStorage();
+}
+```
+
+## Key Concepts Learned
+
+- **Event Binding**: Using `(change)` to respond to checkbox clicks
+- **Ternary Operators**: Compact conditional logic `condition ? true : false`
+- **Spread Operator**: `{...item}` for copying objects while changing properties
+- **Map Method**: Creating new arrays with transformed items
+- **Signal Reactivity**: How Angular automatically updates the UI
+- **Immutable Updates**: Never mutating state directly
+
+---
+
+**Next Step:** We'll add Search, Filter, Sort & Bulk Delete functionality to clear all completed tasks at once, plus search and filter features.
