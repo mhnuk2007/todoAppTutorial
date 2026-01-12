@@ -125,7 +125,15 @@ export class TodoApp implements OnInit {
 
   this.saveToLocalStorage();
   }
-
+  // Clear Completed Tasks
+  clearCompletedTasks() {
+    if (confirm('Are you sure you want to clear all completed tasks?')) {
+      this.todoList.update((list) => {
+        return list.filter((item) => item.status !== 'Completed');
+      });
+      this.saveToLocalStorage();
+    }
+  }
 
   // Helper Methods
   generateId() {
@@ -146,7 +154,7 @@ export class TodoApp implements OnInit {
   getPendingCount(): number {
     return this.todoList().filter((item) => item.status === 'Pending').length;
   }
-  
+
 }
 
 class TodoItemModel {

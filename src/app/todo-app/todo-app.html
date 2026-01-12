@@ -77,6 +77,16 @@
       </select>
     </div>
   </div>
+  <!-- Clear Completed Button -->
+   @if(getCompletedCount() > 0) {
+  <div class="mb-3 mb-md-4 text-end">
+    <button (click)="clearCompletedTasks()" class="btn btn-sm btn-outline-danger">
+      <i class="fa fa-trash me-1"></i> Clear Completed ({{ getCompletedCount() }})
+    </button>
+  </div>
+  }
+
+  <!-- Task List -->
 
   <ul class="task-list">
     @if (todoList().length > 0) { @for (item of todoList(); track item.todoItemId) {
