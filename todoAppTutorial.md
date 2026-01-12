@@ -1704,7 +1704,7 @@ Computed signals:
 - ✅ **Reactive** - update automatically
 - ✅ **Cleaner code** - no method calls in template
 
-## Step 1: Convert Filter Properties to Signals
+## 1: Convert Filter Properties to Signals
 
 First, we need to convert our filter properties to signals so they can be tracked as dependencies.
 
@@ -1727,7 +1727,7 @@ sortOrder = signal('newest');
 - Regular variables don't trigger recomputation
 - Signals make dependencies explicit
 
-## Step 2: Create the Computed Signal
+## 2: Create the Computed Signal
 
 Replace the `getFilteredTasks()` method with a computed signal:
 
@@ -1769,7 +1769,7 @@ filteredTasks = computed(() => {
 - `this.sortOrder` → `this.sortOrder()` (call as function)
 - No parameters needed - dependencies are tracked automatically
 
-## Step 3: Update Template Bindings
+## 3: Update Template Bindings
 
 Now we need to update the template to use signals. In `todo-app.html`:
 
@@ -2068,4 +2068,441 @@ if (this.filterStatus() !== 'All')
 
 ---
 
-**Next Step:** We'll add a statistics dashboard to display task counts and progress.
+# Step 18: Display Task Statistics Dashboard
+
+Let's add a visual statistics dashboard that shows task counts and progress at a glance. This gives users instant feedback about their productivity.
+
+## Understanding the Statistics
+
+We'll display three key metrics:
+- 📊 **Total Tasks** - All tasks in the system
+- ⏸️ **Pending Tasks** - Tasks not yet started
+- ✅ **Completed Tasks** - Finished tasks
+
+## 1: Verify Helper Methods Exist
+
+These methods should already exist from Step 16. Verify they're in `todo-app.ts`:
+
+```typescript
+getCompletedCount(): number {
+  return this.todoList().filter((item) => item.status === 'Completed').length;
+}
+
+getPendingCount(): number {
+  return this.todoList().filter((item) => item.status === 'Pending').length;
+}
+```
+
+**What they do:**
+- Filter the task list by status
+- Return the count of matching tasks
+- Automatically reactive (reads from signal)
+
+## 2: Add Statistics Dashboard to Template
+
+Add this section in `todo-app.html` after the "Add Task Section" and before the "Controls Section":
+
+```html
+<!-- Add Task Section -->
+<section class="custom-card">
+  <!-- ... existing add task form ... -->
+</section>
+
+<!-- Quick Stats Dashboard -->
+@if(todoList().length > 0) {
+  <div class="stats-dashboard mb-4">
+    <div class="row g-3">
+      <!-- Total Tasks -->
+      <div class="col-4">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{todoList().length}}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pending Tasks -->
+      <div class="col-4">
+        <div class="stat-card stat-pending">
+          <div class="stat-icon">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getPendingCount()}}</div>
+            <div class="stat-label">Pending</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed Tasks -->
+      <div class="col-4">
+        <div class="stat-card stat-completed">
+          <div class="stat-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getCompletedCount()}}</div>
+            <div class="stat-label">Done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Controls Section -->
+<div class="d-flex justify-content-between align-items-center mb-4 filters-group">
+  <!-- ... existing controls ... -->
+</div>
+```
+
+**Template structure:**
+- `@if(todoList().length > 0)` - Only shows when tasks exist
+- Three columns using Bootstrap grid (`col-4`)
+- Each stat card has an icon and content section
+- Different classes for different stat types (for styling)
+
+## 3: Add Statistics Styling
+
+Add this CSS to `todo-app.css`:
+
+```css
+/* Statistics Dashboard */
+.stats-dashboard {
+  animation: slideInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stat-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+/* Total Tasks - Purple Gradient */
+.stat-total .stat-icon {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+}
+
+/* Pending Tasks - Orange/Amber */
+.stat-pending .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+}
+
+/* Completed Tasks - Green */
+.stat-completed .stat-icon {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Animation */
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .stat-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 0.75rem;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+
+  .stat-value {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.7rem;
+  }
+}
+```
+
+**Styling features:**
+- Gradient backgrounds for icons
+- Smooth hover animations
+- Responsive layout for mobile
+- Consistent spacing and typography
+- Slide-down entrance animation
+
+## Understanding the Template Syntax
+
+### Conditional Rendering
+
+```html
+@if(todoList().length > 0) {
+  <!-- Stats dashboard -->
+}
+```
+
+**Why conditional?**
+- No point showing stats when there are no tasks
+- Cleaner UI for new users
+- Dashboard appears after first task is added
+
+### Displaying Counts
+
+```html
+<div class="stat-value">{{todoList().length}}</div>
+<div class="stat-value">{{getPendingCount()}}</div>
+<div class="stat-value">{{getCompletedCount()}}</div>
+```
+
+**How it works:**
+- `{{ }}` interpolation displays the value
+- `.length` gets total count directly from signal
+- Method calls get filtered counts
+- Updates automatically when tasks change
+
+## Advanced Enhancement (Optional - Not added in the included project)
+
+### Add Progress Percentage
+
+You can add a completion percentage calculation:
+
+```typescript
+getCompletionPercentage(): number {
+  const total = this.todoList().length;
+  if (total === 0) return 0;
+  
+  const completed = this.getCompletedCount();
+  return Math.round((completed / total) * 100);
+}
+```
+
+Add to template:
+
+```html
+<div class="col-12 mt-2">
+  <div class="progress-bar-container">
+    <div class="progress-info">
+      <span>Progress</span>
+      <span class="progress-percentage">{{getCompletionPercentage()}}%</span>
+    </div>
+    <div class="progress">
+      <div 
+        class="progress-bar" 
+        [style.width.%]="getCompletionPercentage()">
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+Add CSS:
+
+```css
+.progress-bar-container {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.progress-percentage {
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+.progress {
+  height: 8px;
+  background-color: rgba(99, 102, 241, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+```
+
+## Test the Statistics
+
+### Basic Functionality:
+1. ✅ Start with empty list - stats should be hidden
+2. ✅ Add first task - stats appear with Total: 1, Pending: 1, Done: 0
+3. ✅ Add more tasks - Total count increases
+4. ✅ Mark task complete - Done count increases, Pending decreases
+5. ✅ Delete task - Total decreases appropriately
+
+### Dynamic Updates:
+1. ✅ Toggle task completion - watch counts update instantly
+2. ✅ Edit task status to "In Progress" - verify counts
+3. ✅ Delete all completed tasks - Done resets to 0
+4. ✅ Add multiple tasks - all counts update correctly
+
+### Visual Checks:
+1. ✅ Hover over stat cards - verify lift animation
+2. ✅ Check on mobile - verify responsive layout
+3. ✅ Verify color coding (purple, orange, green)
+4. ✅ Verify entrance animation on first task add
+
+## Benefits of Statistics Dashboard
+
+### For Users:
+- 📊 **Quick Overview** - See progress at a glance
+- 🎯 **Motivation** - Visual feedback encourages completion
+- 📈 **Productivity Tracking** - Monitor daily/weekly progress
+- 🎨 **Visual Appeal** - Makes app more engaging
+
+### For Developers:
+- 🔄 **Reactive** - Updates automatically with signals
+- 🧩 **Modular** - Easy to add more stats
+- 🎨 **Customizable** - Easy to style differently
+- 📱 **Responsive** - Works on all screen sizes
+
+## Complete Code Summary
+
+### In `todo-app.ts`:
+
+```typescript
+// Helper methods (should already exist)
+getCompletedCount(): number {
+  return this.todoList().filter((item) => item.status === 'Completed').length;
+}
+
+getPendingCount(): number {
+  return this.todoList().filter((item) => item.status === 'Pending').length;
+}
+
+// Optional: Progress percentage
+getCompletionPercentage(): number {
+  const total = this.todoList().length;
+  if (total === 0) return 0;
+  
+  const completed = this.getCompletedCount();
+  return Math.round((completed / total) * 100);
+}
+```
+
+### In `todo-app.html`:
+
+```html
+@if(todoList().length > 0) {
+  <div class="stats-dashboard mb-4">
+    <div class="row g-3">
+      <div class="col-4">
+        <div class="stat-card stat-total">
+          <div class="stat-icon">
+            <i class="fa-solid fa-list-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{todoList().length}}</div>
+            <div class="stat-label">Total</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-4">
+        <div class="stat-card stat-pending">
+          <div class="stat-icon">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getPendingCount()}}</div>
+            <div class="stat-label">Pending</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-4">
+        <div class="stat-card stat-completed">
+          <div class="stat-icon">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-content">
+            <div class="stat-value">{{getCompletedCount()}}</div>
+            <div class="stat-label">Done</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+```
+
+## Key Concepts Learned
+
+- **Conditional Rendering**: Using `@if` for better UX
+- **Interpolation**: Displaying dynamic values with `{{ }}`
+- **Computed Values**: Methods that calculate from signals
+- **Responsive Design**: Mobile-first approach
+- **Animations**: Smooth transitions and entrance effects
+- **Visual Feedback**: Using color and icons effectively
+
+---
+
+**Congratulations!** Your todo app now has a complete feature set with statistics tracking. Users can see their progress and stay motivated to complete tasks!
+
