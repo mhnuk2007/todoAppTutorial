@@ -1678,3 +1678,394 @@ tasks = [...tasks].sort((a, b) => {
 5. ✅ Verify button disappears
 
 ---
+
+# Step 17: Create Derived State with Computed Signals
+
+In Step 16, we created the `getFilteredTasks()` method to filter, search, and sort tasks. Now we'll optimize this by converting it to a **computed signal**. This is a more performant and reactive approach.
+
+## Understanding Computed Signals
+
+### The Problem with Methods
+
+Currently, our template calls `getFilteredTasks()` like this:
+
+```html
+@for (item of getFilteredTasks(); track item.todoItemId) {
+```
+
+**Issue:** This method runs on **every change detection cycle**, even when the data hasn't changed. This can impact performance with larger task lists.
+
+### The Solution: Computed Signals
+
+Computed signals:
+- ✅ **Automatically recalculate** when dependencies change
+- ✅ **Cached** - only recompute when inputs change
+- ✅ **More performant** - avoid unnecessary calculations
+- ✅ **Reactive** - update automatically
+- ✅ **Cleaner code** - no method calls in template
+
+## Step 1: Convert Filter Properties to Signals
+
+First, we need to convert our filter properties to signals so they can be tracked as dependencies.
+
+In `todo-app.ts`, update these properties:
+
+```typescript
+// OLD - Regular properties
+searchText: string = '';
+filterStatus: string = 'All';
+sortOrder: string = 'newest';
+
+// NEW - Signal properties
+searchText = signal('');
+filterStatus = signal('All');
+sortOrder = signal('newest');
+```
+
+**Why this change?**
+- Computed signals can only track other signals
+- Regular variables don't trigger recomputation
+- Signals make dependencies explicit
+
+## Step 2: Create the Computed Signal
+
+Replace the `getFilteredTasks()` method with a computed signal:
+
+```typescript
+// Remove this method:
+// getFilteredTasks(): TodoItemModel[] { ... }
+
+// Add this computed signal:
+filteredTasks = computed(() => {
+  let tasks = this.todoList();
+  
+  // Apply status filter
+  if (this.filterStatus() !== 'All') {
+    tasks = tasks.filter(task => task.status === this.filterStatus());
+  }
+  
+  // Apply search filter
+  if (this.searchText().trim()) {
+    const searchLower = this.searchText().toLowerCase();
+    tasks = tasks.filter(task => 
+      task.todoItem.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  // Apply sorting
+  tasks = [...tasks].sort((a, b) => {
+    const dateA = new Date(a.createdDate).getTime();
+    const dateB = new Date(b.createdDate).getTime();
+    return this.sortOrder() === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+  
+  return tasks;
+});
+```
+
+**Key changes:**
+- `this.filterStatus` → `this.filterStatus()` (call as function)
+- `this.searchText` → `this.searchText()` (call as function)
+- `this.sortOrder` → `this.sortOrder()` (call as function)
+- No parameters needed - dependencies are tracked automatically
+
+## Step 3: Update Template Bindings
+
+Now we need to update the template to use signals. In `todo-app.html`:
+
+### Update Search Input:
+
+```html
+<!-- OLD -->
+<input type="text" [(ngModel)]="searchText" class="form-control ps-5" placeholder="Search tasks...">
+
+<!-- NEW -->
+<input 
+  type="text" 
+  [ngModel]="searchText()" 
+  (ngModelChange)="searchText.set($event)"
+  class="form-control ps-5" 
+  placeholder="Search tasks...">
+```
+
+### Update Status Filter:
+
+```html
+<!-- OLD -->
+<select [(ngModel)]="filterStatus" class="form-select w-auto">
+
+<!-- NEW -->
+<select 
+  [ngModel]="filterStatus()" 
+  (ngModelChange)="filterStatus.set($event)"
+  class="form-select w-auto">
+  <option value="All">All Status</option>
+  <option value="Pending">Pending</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Completed">Completed</option>
+</select>
+```
+
+### Update Sort Order:
+
+```html
+<!-- OLD -->
+<select [(ngModel)]="sortOrder" class="form-select w-auto">
+
+<!-- NEW -->
+<select 
+  [ngModel]="sortOrder()" 
+  (ngModelChange)="sortOrder.set($event)"
+  class="form-select w-auto">
+  <option value="newest">Newest</option>
+  <option value="oldest">Oldest</option>
+</select>
+```
+
+### Update Task List:
+
+```html
+<!-- OLD -->
+@for (item of getFilteredTasks(); track item.todoItemId) {
+
+<!-- NEW -->
+@for (item of filteredTasks(); track item.todoItemId) {
+```
+
+### Update Empty States:
+
+```html
+<!-- OLD -->
+@if (getFilteredTasks().length === 0 && todoList().length > 0) {
+
+<!-- NEW -->
+@if (filteredTasks().length === 0 && todoList().length > 0) {
+```
+
+## Understanding the New Binding Syntax
+
+### Two-way Binding with Signals
+
+```html
+<!-- Standard two-way binding (for regular properties) -->
+[(ngModel)]="propertyName"
+
+<!-- Signal two-way binding (manual) -->
+[ngModel]="signalName()"
+(ngModelChange)="signalName.set($event)"
+```
+
+**How it works:**
+1. `[ngModel]="searchText()"` - **Read**: Displays current signal value
+2. `(ngModelChange)="searchText.set($event)"` - **Write**: Updates signal when user types
+3. `$event` contains the new value from the input
+
+**Why not use `[(ngModel)]` with signals?**
+- Angular's two-way binding `[(ngModel)]` works with regular properties
+- Signals need explicit `.set()` calls to update
+- Manual binding gives us more control
+
+## How Computed Works
+
+Here's the reactive flow:
+
+```
+User types in search box
+    ↓
+(ngModelChange) event fires
+    ↓
+searchText.set($event) updates signal
+    ↓
+filteredTasks computed detects change
+    ↓
+Recomputes filtered results
+    ↓
+Template automatically updates
+    ↓
+New filtered list displays
+```
+
+**Dependencies tracked:**
+- `this.todoList()` - Main task list
+- `this.filterStatus()` - Status filter
+- `this.searchText()` - Search term
+- `this.sortOrder()` - Sort direction
+
+**When filteredTasks recomputes:**
+- ✅ When a task is added/edited/deleted
+- ✅ When filter status changes
+- ✅ When search text changes
+- ✅ When sort order changes
+- ❌ When unrelated data changes
+- ❌ On every change detection cycle
+
+## Performance Benefits
+
+### Before (Method):
+```typescript
+getFilteredTasks(): TodoItemModel[] {
+  // Runs on EVERY change detection
+  // Even if nothing changed
+}
+```
+
+**Calls per second:** 10-50+ (depends on activity)
+
+### After (Computed):
+```typescript
+filteredTasks = computed(() => {
+  // Only runs when dependencies change
+  // Cached between runs
+});
+```
+
+**Recomputes only when:** Dependencies actually change
+
+### Example Scenario:
+
+User hovers over a button (triggers change detection):
+- **Method approach:** Filters entire list again ❌
+- **Computed approach:** Returns cached result ✅
+
+## Complete Code Changes
+
+### In `todo-app.ts`:
+
+```typescript
+export class TodoApp implements OnInit {
+  newTask: TodoItemModel = new TodoItemModel();
+  localKeyName: string = 'todoItems';
+
+  // Convert to signals
+  searchText = signal('');
+  filterStatus = signal('All');
+  sortOrder = signal('newest');
+
+  todoList = signal<TodoItemModel[]>([]);
+
+  // Add computed signal
+  filteredTasks = computed(() => {
+    let tasks = this.todoList();
+    
+    if (this.filterStatus() !== 'All') {
+      tasks = tasks.filter(task => task.status === this.filterStatus());
+    }
+    
+    if (this.searchText().trim()) {
+      const searchLower = this.searchText().toLowerCase();
+      tasks = tasks.filter(task => 
+        task.todoItem.toLowerCase().includes(searchLower)
+      );
+    }
+    
+    tasks = [...tasks].sort((a, b) => {
+      const dateA = new Date(a.createdDate).getTime();
+      const dateB = new Date(b.createdDate).getTime();
+      return this.sortOrder() === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    
+    return tasks;
+  });
+
+  // Keep other methods (ngOnInit, addTask, etc.)
+  // Remove getFilteredTasks() method
+}
+```
+
+### In `todo-app.html`:
+
+```html
+<!-- Search -->
+<input 
+  type="text" 
+  [ngModel]="searchText()" 
+  (ngModelChange)="searchText.set($event)"
+  class="form-control ps-5" 
+  placeholder="Search tasks...">
+
+<!-- Filter -->
+<select 
+  [ngModel]="filterStatus()" 
+  (ngModelChange)="filterStatus.set($event)"
+  class="form-select w-auto">
+  <option value="All">All Status</option>
+  <option value="Pending">Pending</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Completed">Completed</option>
+</select>
+
+<!-- Sort -->
+<select 
+  [ngModel]="sortOrder()" 
+  (ngModelChange)="sortOrder.set($event)"
+  class="form-select w-auto">
+  <option value="newest">Newest</option>
+  <option value="oldest">Oldest</option>
+</select>
+
+<!-- Task List -->
+@for (item of filteredTasks(); track item.todoItemId) {
+  <!-- ... -->
+}
+
+<!-- Empty States -->
+@if (filteredTasks().length === 0 && todoList().length > 0) {
+  <!-- No results message -->
+}
+```
+
+## Test Everything Still Works
+
+1. ✅ **Search** - Type in search box, verify instant filtering
+2. ✅ **Filter** - Change status filter, verify correct tasks show
+3. ✅ **Sort** - Toggle sort order, verify tasks reorder
+4. ✅ **Add task** - Add new task, verify it appears in filtered list
+5. ✅ **Edit task** - Edit task text, verify search still works
+6. ✅ **Delete task** - Delete task, verify list updates
+7. ✅ **Toggle complete** - Check/uncheck, verify filter updates
+
+## Common Issues
+
+### Issue: Template shows `[object Object]`
+**Cause:** Forgot to call signal as function
+```html
+<!-- Wrong -->
+{{filteredTasks}}
+
+<!-- Correct -->
+{{filteredTasks()}}
+```
+
+### Issue: Input doesn't update when typing
+**Cause:** Missing `ngModelChange` handler
+```html
+<!-- Wrong -->
+[ngModel]="searchText()"
+
+<!-- Correct -->
+[ngModel]="searchText()" 
+(ngModelChange)="searchText.set($event)"
+```
+
+### Issue: Filter doesn't work
+**Cause:** Not calling signal in comparison
+```typescript
+// Wrong
+if (this.filterStatus !== 'All')
+
+// Correct
+if (this.filterStatus() !== 'All')
+```
+
+## Key Concepts Learned
+
+- **Computed Signals**: Derived state that auto-updates
+- **Signal Dependencies**: How computed tracks inputs
+- **Performance**: Caching vs recalculation
+- **Manual Binding**: Using `[ngModel]` with `(ngModelChange)`
+- **Signal Methods**: `.set()` for updating values
+- **Reactive Programming**: Declarative data flow
+
+---
+
+**Next Step:** We'll add a statistics dashboard to display task counts and progress.
