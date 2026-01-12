@@ -1440,7 +1440,7 @@ clearCompletedTasks() {
 ---
 ## Part C: Implement Search, Filter, and Sort
 
-### Step 1: Connect Template Inputs to Component Properties
+### 1: Connect Template Inputs to Component Properties
 
 Update the Controls Section in `todo-app.html`:
 
@@ -1476,3 +1476,13 @@ Update the Controls Section in `todo-app.html`:
 - Added `[(ngModel)]="filterStatus"` to status dropdown
 - Added `[(ngModel)]="sortOrder"` to sort dropdown
 - Changed option values to match our component properties
+
+### 2: Verify Component Properties
+
+Make sure these properties exist in `todo-app.ts` (should already be there from Step 8):
+
+```typescript
+// Filter and search properties
+searchText: string = '';
+filterStatus: string = 'All';
+sortOrder: string = 'newest';
