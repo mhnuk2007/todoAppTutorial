@@ -1375,4 +1375,66 @@ getPendingCount(): number {
 - Keeps template code clean and readable
 
 ---
+## Part B: Bulk Delete Completed Tasks
 
+### 1: Add Clear Completed Button
+
+Add this button in `todo-app.html` after the Controls Section and before the task list:
+
+```html
+<!-- Controls Section -->
+  <div
+    class="filters-group d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3 mb-md-4 gap-2 gap-md-3">
+  <!-- ... existing search and filters ... -->
+</div>
+
+  <!-- Clear Completed Button -->
+   @if(getCompletedCount() > 0) {
+  <div class="mb-3 mb-md-4 text-end">
+    <button (click)="clearCompletedTasks()" class="btn btn-sm btn-outline-danger">
+      <i class="fa fa-trash me-1"></i> Clear Completed ({{ getCompletedCount() }})
+    </button>
+  </div>
+  }
+
+<!-- Task List -->
+<ul class="task-list">
+  <!-- ... existing task items ... -->
+</ul>
+```
+
+**Template features:**
+- `@if(getCompletedCount() > 0)` - Only shows when there are completed tasks
+- `{{getCompletedCount()}}` - Displays count dynamically
+- `text-end` - Right-aligns the button
+- `btn-outline-danger` - Red danger styling
+
+### 2: Create the `clearCompletedTasks()` Method
+
+Add this to `todo-app.ts`:
+
+```typescript
+clearCompletedTasks() {
+  if (confirm('Are you sure you want to delete all completed tasks?')) {
+    this.todoList.update((list) => {
+      return list.filter((item) => item.status !== 'Completed');
+    });
+    
+    this.saveToLocalStorage();
+  }
+}
+```
+
+**How it works:**
+- **Confirmation**: Shows dialog before bulk deletion
+- **Filter Logic**: Keeps only tasks where `status !== 'Completed'`
+- **Immutable**: Creates new array without completed tasks
+- **Persist**: Saves to localStorage
+
+**Why this is safe:**
+- ⚠️ Confirmation prevents accidents
+- 📊 Shows count so users know impact
+- 👁️ Only appears when there are completed tasks
+- 💾 Changes are permanent after confirmation
+
+---
