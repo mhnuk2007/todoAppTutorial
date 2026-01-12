@@ -1341,4 +1341,7 @@ toggleComplete(task: TodoItemModel) {
 
 ---
 
-**Next Step:** We'll add Search, Filter, Sort & Bulk Delete functionality to clear all completed tasks at once, plus search and filter features.
+**Note:** Modified template and css to make this app responsive for the small screens.
+
+---
+ 

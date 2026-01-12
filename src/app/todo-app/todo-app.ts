@@ -138,6 +138,15 @@ export class TodoApp implements OnInit {
   saveToLocalStorage() {
     localStorage.setItem(this.localKeyName, JSON.stringify(this.todoList()));
   }
+
+  getCompletedCount(): number {
+    return this.todoList().filter((item) => item.status === 'Completed').length;
+  }
+
+  getPendingCount(): number {
+    return this.todoList().filter((item) => item.status === 'Pending').length;
+  }
+  
 }
 
 class TodoItemModel {
