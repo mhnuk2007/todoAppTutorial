@@ -134,6 +134,30 @@ export class TodoApp implements OnInit {
       this.saveToLocalStorage();
     }
   }
+  // filter search and sort
+  getFilteredTasks(): TodoItemModel[] {
+    let tasks = this.todoList();
+
+    // Apply status filter
+    if (this.filterStatus !== 'All') {
+      tasks = tasks.filter((item) => item.status === this.filterStatus);
+    }
+    // Apply search filter
+    if (this.searchText.trim()) {
+      const searchLower = this.searchText.toLowerCase();
+      tasks = tasks.filter((item) =>
+        item.todoItem.toLowerCase().includes(searchLower)
+      );
+    }
+
+    // Apply sorting
+    tasks = [...tasks].sort((a, b) => {
+        const dateA = new Date(a.createdDate).getTime();
+        const dateB = new Date(b.createdDate).getTime();
+        return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+      });
+    return tasks;
+  }
 
   // Helper Methods
   generateId() {
