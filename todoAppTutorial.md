@@ -1438,3 +1438,41 @@ clearCompletedTasks() {
 - 💾 Changes are permanent after confirmation
 
 ---
+## Part C: Implement Search, Filter, and Sort
+
+### Step 1: Connect Template Inputs to Component Properties
+
+Update the Controls Section in `todo-app.html`:
+
+```html
+  <!-- Controls Section -->
+  <div
+    class="filters-group d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3 mb-md-4 gap-2 gap-md-3">
+    <!-- Search Input -->
+    <div class="position-relative flex-grow-1">
+      <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+      <input type="text"
+      [(ngModel)]="searchText"
+      class="form-control ps-5"
+      placeholder="Search tasks..." />
+    </div>
+    <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
+      <select [(ngModel)]="filterStatus" class="form-select w-100 flex-sm-fill w-md-auto">
+        <option selected>All Status</option>
+        <option>Pending</option>
+        <option>In Progress</option>
+        <option>Completed</option>
+      </select>
+      <select [(ngModel)]="sortOrder" class="form-select w-100 flex-sm-fill w-md-auto">
+        <option selected>Newest</option>
+        <option>Oldest</option>
+      </select>
+    </div>
+  </div>
+  ```
+
+**What changed:**
+- Added `[(ngModel)]="searchText"` to search input
+- Added `[(ngModel)]="filterStatus"` to status dropdown
+- Added `[(ngModel)]="sortOrder"` to sort dropdown
+- Changed option values to match our component properties
