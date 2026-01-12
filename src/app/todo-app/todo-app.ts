@@ -135,18 +135,19 @@ export class TodoApp implements OnInit {
     }
   }
   // filter search and sort
-  getFilteredTasks(): TodoItemModel[] {
+  // Replace getFilteredTasks method with computed property
+  filteredTasks = computed(() => {
     let tasks = this.todoList();
 
     // Apply status filter
-    if (this.filterStatus !== 'All') {
-      tasks = tasks.filter((item) => item.status === this.filterStatus);
+    if (this.filterStatus() !== 'All') {
+      tasks = tasks.filter((task) => task.status === this.filterStatus());
     }
     // Apply search filter
-    if (this.searchText.trim()) {
-      const searchLower = this.searchText.toLowerCase();
-      tasks = tasks.filter((item) =>
-        item.todoItem.toLowerCase().includes(searchLower)
+    if (this.searchText().trim()) {
+      const searchLower = this.searchText().toLowerCase();
+      tasks = tasks.filter((task) =>
+        task.todoItem.toLowerCase().includes(searchLower)
       );
     }
 
@@ -154,10 +155,10 @@ export class TodoApp implements OnInit {
     tasks = [...tasks].sort((a, b) => {
         const dateA = new Date(a.createdDate).getTime();
         const dateB = new Date(b.createdDate).getTime();
-        return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+        return this.sortOrder() === 'newest' ? dateB - dateA : dateA - dateB;
       });
     return tasks;
-  }
+  });
 
   // Helper Methods
   generateId() {
