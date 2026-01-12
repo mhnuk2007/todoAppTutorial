@@ -1458,14 +1458,14 @@ Update the Controls Section in `todo-app.html`:
     </div>
     <div class="d-flex flex-column flex-sm-row gap-2 w-100 w-md-auto">
       <select [(ngModel)]="filterStatus" class="form-select w-100 flex-sm-fill w-md-auto">
-        <option selected>All Status</option>
-        <option>Pending</option>
-        <option>In Progress</option>
-        <option>Completed</option>
+        <option value = "All">All Status</option>
+        <option value = "Pending">Pending</option>
+        <option value = "In Progress">In Progress</option>
+        <option value = "Completed">Completed</option>
       </select>
       <select [(ngModel)]="sortOrder" class="form-select w-100 flex-sm-fill w-md-auto">
-        <option selected>Newest</option>
-        <option>Oldest</option>
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
       </select>
     </div>
   </div>
@@ -1486,3 +1486,195 @@ Make sure these properties exist in `todo-app.ts` (should already be there from 
 searchText: string = '';
 filterStatus: string = 'All';
 sortOrder: string = 'newest';
+```
+
+### 3: Create the `getFilteredTasks()` Method
+
+Add this comprehensive filtering method to `todo-app.ts`:
+
+```typescript
+getFilteredTasks(): TodoItemModel[] {
+  let tasks = this.todoList();
+  
+  // Apply status filter
+  if (this.filterStatus !== 'All') {
+    tasks = tasks.filter(task => task.status === this.filterStatus);
+  }
+  
+  // Apply search filter
+  if (this.searchText.trim()) {
+    const searchLower = this.searchText.toLowerCase();
+    tasks = tasks.filter(task => 
+      task.todoItem.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  // Apply sorting
+  tasks = [...tasks].sort((a, b) => {
+    const dateA = new Date(a.createdDate).getTime();
+    const dateB = new Date(b.createdDate).getTime();
+    return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+  });
+  
+  return tasks;
+}
+```
+
+### 4: Update Template to Use Filtered Tasks
+
+Update the task list in `todo-app.html` to use `getFilteredTasks()`:
+
+```html
+<ul class="task-list">
+  @if (getFilteredTasks().length > 0) { 
+    @for (item of getFilteredTasks(); track item.todoItemId) {
+      <li class="task-item"
+          [class.completed]="item.status === 'Completed'"
+          [class.editing]="item.todoItemId === newTask.todoItemId">
+        <!-- ... rest of task item ... -->
+      </li>
+    }
+  }
+</ul>
+
+<!-- Empty State -->
+@if (getFilteredTasks().length === 0 && todoList().length > 0) {
+  <div class="empty-state mt-4">
+    <i class="fa-solid fa-filter empty-icon"></i>
+    <h5>No tasks found</h5>
+    <p class="mb-0 small">Try adjusting your filters or search term</p>
+  </div>
+}
+
+@if (todoList().length === 0) {
+  <div class="empty-state mt-4">
+    <i class="fa-solid fa-clipboard-check empty-icon"></i>
+    <h5>No tasks yet</h5>
+    <p class="mb-0 small">Start by adding your first task above</p>
+  </div>
+}
+```
+
+**Changed:**
+- `todoList()` → `getFilteredTasks()` in the `@for` loop
+- Added separate empty state for "no results" vs "no tasks"
+
+---
+
+## Understanding the Filtering Logic
+
+### Processing Order
+
+The method processes in this specific order for efficiency:
+
+```
+1. Start with all tasks
+   ↓
+2. Filter by status (if not "All")
+   ↓
+3. Filter by search text (if not empty)
+   ↓
+4. Sort by date (newest or oldest)
+   ↓
+5. Return filtered results
+```
+
+### 1. Status Filter
+
+```typescript
+if (this.filterStatus !== 'All') {
+  tasks = tasks.filter(task => task.status === this.filterStatus);
+}
+```
+
+- If "All" is selected, skip filtering (show all)
+- Otherwise, keep only tasks matching the selected status
+- Uses `filter()` to create new array
+
+### 2. Search Filter
+
+```typescript
+if (this.searchText.trim()) {
+  const searchLower = this.searchText.toLowerCase();
+  tasks = tasks.filter(task => 
+    task.todoItem.toLowerCase().includes(searchLower)
+  );
+}
+```
+
+**How the search works:**
+- `trim()` removes leading/trailing spaces
+- If search box is empty, skip filtering
+- Convert both search text and task text to lowercase
+- `includes()` checks if task text contains search term
+- Case-insensitive search (user can type "HELLO" or "hello")
+
+**Examples:**
+- Search: "meeting" → matches "Team Meeting", "Client meeting setup"
+- Search: "buy" → matches "Buy groceries", "buy milk"
+- Search: "" (empty) → shows all tasks
+
+### 3. Sorting
+
+```typescript
+tasks = [...tasks].sort((a, b) => {
+  const dateA = new Date(a.createdDate).getTime();
+  const dateB = new Date(b.createdDate).getTime();
+  return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+});
+```
+
+**Why `[...tasks]` spread operator?**
+- `sort()` modifies the array in-place
+- Spread creates a copy first
+- Prevents mutation of the filtered array
+
+**How sorting works:**
+- Convert dates to timestamps (numbers)
+- Compare timestamps
+- Newest first: `dateB - dateA` (larger timestamp = newer date)
+- Oldest first: `dateA - dateB` (smaller timestamp = older date)
+
+---
+
+## Test All Features
+
+### Test Search:
+1. ✅ Add tasks: "Buy milk", "Buy bread", "Meeting with team"
+2. ✅ Type "buy" in search
+3. ✅ Verify: Only "Buy milk" and "Buy bread" appear
+4. ✅ Clear search
+5. ✅ Verify: All tasks reappear
+
+### Test Filter:
+1. ✅ Add tasks with different statuses (Pending, In Progress, Completed)
+2. ✅ Select "Pending" filter
+3. ✅ Verify: Only pending tasks show
+4. ✅ Select "Completed"
+5. ✅ Verify: Only completed tasks show
+6. ✅ Select "All Status"
+7. ✅ Verify: All tasks show
+
+### Test Sort:
+1. ✅ Add 3-4 tasks with delays between each
+2. ✅ Select "Newest" sort
+3. ✅ Verify: Most recent task appears first
+4. ✅ Select "Oldest" sort
+5. ✅ Verify: First task appears first
+
+### Test Combined:
+1. ✅ Add various tasks
+2. ✅ Apply filter: "In Progress"
+3. ✅ Apply search: "meeting"
+4. ✅ Verify: Only in-progress tasks containing "meeting" show
+5. ✅ Change sort order
+6. ✅ Verify: Filtered results sort correctly
+
+### Test Bulk Delete:
+1. ✅ Mark 2-3 tasks as completed
+2. ✅ Verify "Clear Completed" button appears with count
+3. ✅ Click button, confirm
+4. ✅ Verify all completed tasks are removed
+5. ✅ Verify button disappears
+
+---
