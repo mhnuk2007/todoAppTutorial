@@ -1344,4 +1344,35 @@ toggleComplete(task: TodoItemModel) {
 **Note:** Modified template and css to make this app responsive for the small screens.
 
 ---
- 
+# Step 16: Search, Filter, Sort & Bulk Delete
+
+In this step, we'll implement powerful task management features:
+1. 🔍 **Search** - Find tasks by text
+2. 🏷️ **Filter** - Show only specific status
+3. 📅 **Sort** - Order by newest or oldest
+4. 🗑️ **Bulk Delete** - Clear all completed tasks
+
+---
+
+## Part A: Add Helper Methods
+
+First, let's add utility methods for counting tasks. Add these to `todo-app.ts`:
+
+```typescript
+getCompletedCount(): number {
+  return this.todoList().filter((item) => item.status === 'Completed').length;
+}
+
+getPendingCount(): number {
+  return this.todoList().filter((item) => item.status === 'Pending').length;
+}
+```
+
+**Why add these helper methods?**
+- Reusable logic for counting tasks by status
+- Used in bulk delete button
+- Can be used for stats dashboard later
+- Keeps template code clean and readable
+
+---
+
