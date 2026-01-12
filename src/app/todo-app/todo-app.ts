@@ -14,10 +14,10 @@ export class TodoApp implements OnInit {
   // Main signal - single source of truth
   todoList = signal<TodoItemModel[]>([]);
 
-  // Filter and search properties
-  searchText: string = '';
-  filterStatus: string = 'All';
-  sortOrder: string = 'newest';
+  // Filter and search properties(Convert to signals)
+  searchText = signal('');
+  filterStatus = signal('All');
+  sortOrder = signal('newest');
 
   localKeyName: string = 'todoItems';
 
