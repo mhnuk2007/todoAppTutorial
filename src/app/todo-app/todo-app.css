@@ -72,7 +72,8 @@
     margin-bottom: 2rem;
 }
 
-.form-control, .form-select {
+.form-control,
+.form-select {
     background-color: var(--bg-input);
     border: 1px solid var(--border-color);
     color: var(--text-primary);
@@ -82,7 +83,8 @@
     transition: all 0.2s ease;
 }
 
-.form-control:focus, .form-select:focus {
+.form-control:focus,
+.form-select:focus {
     background-color: var(--bg-input);
     border-color: var(--accent-primary);
     color: var(--text-primary);
@@ -191,12 +193,12 @@
     transform: rotate(45deg);
 }
 
-.task-checkbox:checked ~ .checkbox-label {
+.task-checkbox:checked~.checkbox-label {
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
     border-color: var(--accent-primary);
 }
 
-.task-checkbox:checked ~ .checkbox-label::after {
+.task-checkbox:checked~.checkbox-label::after {
     display: block;
     animation: checkmark 0.3s ease;
 }
@@ -206,10 +208,12 @@
         height: 0;
         width: 0;
     }
+
     50% {
         height: 11px;
         width: 0;
     }
+
     100% {
         height: 11px;
         width: 6px;
@@ -303,9 +307,9 @@
 }
 
 .task-item.editing {
-  border-color: #f59e0b;
-  background-color: #fffbeb;
-  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+    border-color: #f59e0b;
+    background-color: #fffbeb;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
 /* --- Empty State --- */
@@ -326,39 +330,168 @@
 
 /* --- Animation Keyframes --- */
 @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0px); }
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-5px);
+    }
+
+    100% {
+        transform: translateY(0px);
+    }
 }
 
-/* Responsive Tweaks */
-@media (max-width: 576px) {
+/* --- Responsive Overrides & Touch Targets (Mobile First Strategy) --- */
+
+/* 
+  Mobile Portrait (< 576px) 
+  - Stacked layouts
+  - Larger touch targets
+  - Reduced font sizes for headers
+*/
+@media (max-width: 575.98px) {
+
+    /* Header Adjustments */
+    .app-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .brand-icon {
+        font-size: 1.75rem;
+    }
+
+    .app-title {
+        font-size: 1.35rem;
+    }
+
+    .app-subtitle {
+        font-size: 0.8rem;
+    }
+
+    /* Card & Container Padding */
+    .custom-card {
+        padding: 1rem;
+    }
+
+    .app-container {
+        padding: 0 0.75rem;
+    }
+
+    /* Touch-Friendly Targets (min 44px) */
+    .btn,
+    .form-control,
+    .form-select {
+        min-height: 44px;
+        font-size: 0.95rem;
+        /* readable text */
+    }
+
+    .btn-icon {
+        width: 40px;
+        height: 40px;
+        /* Slightly larger for touch */
+    }
+
+    /* Filters Section Mobile Optimization */
     .filters-group {
         flex-direction: column;
+        gap: 0.75rem !important;
+        /* Force gap */
+    }
+
+    .filters-group .position-relative {
+        width: 100%;
+        /* Search bar full width */
+    }
+
+    /* Task Item Mobile Layout */
+    .task-item {
+        flex-wrap: wrap;
+        /* Allow wrapping */
+        padding: 0.875rem;
         gap: 0.5rem;
     }
 
-    .task-item {
-        flex-wrap: wrap;
-        gap: 0.75rem;
+    .task-content {
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+        width: 100%;
+        /* Full width content */
     }
 
     .task-checkbox-wrapper {
-        margin-right: 0.75rem;
+        margin-right: 0.5rem;
     }
 
-    .task-content {
-        flex: 1;
-        min-width: 0;
-        margin-right: 0;
-    }
-
+    /* Actions on new row, full width, right aligned */
     .task-actions {
         width: 100%;
         display: flex;
         justify-content: flex-end;
         border-top: 1px solid var(--border-color);
         padding-top: 0.75rem;
-        margin-left: calc(24px + 0.75rem);
+        margin-top: 0.25rem;
+        gap: 0.5rem;
+    }
+
+    /* Typography Scaling */
+    .task-title {
+        font-size: 0.95rem;
+    }
+
+    .task-meta {
+        font-size: 0.75rem;
+    }
+
+    .status-badge {
+        font-size: 0.65rem;
+        padding: 0.2em 0.6em;
+    }
+
+    /* Empty State */
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* 
+  Tablet Optimization (576px - 767px)
+  - Bridge between mobile and desktop 
+*/
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .brand-icon {
+        font-size: 2rem;
+    }
+
+    .app-title {
+        font-size: 1.5rem;
+    }
+
+    .custom-card {
+        padding: 1.25rem;
+    }
+}
+
+/* 
+  Landscape Mobile (< 812px height)
+  - Optimization for vertical space
+*/
+@media (max-width: 812px) and (orientation: landscape) {
+    .app-header {
+        margin-bottom: 1rem;
+    }
+
+    .brand-icon {
+        font-size: 1.5rem;
+    }
+
+    .app-container {
+        padding-top: 1rem;
     }
 }
