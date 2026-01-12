@@ -1,183 +1,126 @@
-# 🎯 Angular Todo App with Signals | Modern Task Management Application
+# 🚀 Angular Todo App with Signals
 
+**A modern, feature-rich Todo Application built with Angular (v18+) and Signal-based state management.**
 
+This project is a complete, production-ready example of modern Angular development practices. It goes beyond basic examples to demonstrate how to build a clean, responsive, and maintainable application with full CRUD functionality, reactive state management, and a great user experience.
 
-[]
-
-> **A modern Angular 21 Todo Application using Signals, Standalone Components, and LocalStorage (Work in Progress). This tutorial project demonstrates the initial phase of building a task management app.**
-
-
+![Angular Todo App](https://user-images.githubusercontent.com/10042090/284342322-1b9148d4-a1e3-4f9e-9366-508b98262274.png)
 
 ---
 
-## 📋 Table of Contents
+## 🔗 Quick Links
 
-- [Overview](#overview)
-- [Progress Status](#progress-status)
-- [Key Features](#key-features)
-- [Technologies Used](#technologies-used)
-- [Getting Started](#getting-started)
-- [Project Structure](#project-structure)
-- [Usage Guide](#usage-guide)
-- [Tutorial Reference](#tutorial-reference)
-- [Contributing](#contributing)
-- [License](#license)
-- [Support](#support)
+- **💻 Live App Demo:** [https://mhnuk2007.github.io/todoAppTutorial/](https://mhnuk2007.github.io/todoAppTutorial/)
+- **📖 Complete Tutorial:** [Read the full step-by-step tutorial here](./todoAppTutorial.md)
+- **🐙 GitHub Repository:** [https://github.com/mhnuk2007/todoAppTutorial](https://github.com/mhnuk2007/todoAppTutorial)
 
 ---
 
-## 🌟 Overview
+## ✨ Features Implemented
 
-**Task Master** is a modern Angular Todo Application project currently under development. The goal is to build a production-ready app with **Angular Signals, Standalone Components, and LocalStorage**.
+This project is packed with features that demonstrate real-world application development.
 
-This project is a **learning journey**: it allows you to explore modern Angular features while building a functional Todo app step by step.
+### **Core Functionality:**
+- ✅ **Add Tasks:** Quickly add new tasks to your list.
+- ✅ **Edit Tasks:** Seamlessly switch to edit mode to update task details and status.
+- ✅ **Delete Tasks:** Remove tasks with a confirmation step to prevent accidental deletion.
+- ✅ **Toggle Completion:** Mark tasks as complete with a single click.
+- ✅ **Bulk Delete:** Clean up your list by deleting all completed tasks at once.
 
-Currently, the project **includes the initial setup and component creation** as per the tutorial. More features like task editing, filtering, sorting, and persistent storage will be implemented in later stages.
+### **Advanced Features:**
+- ✅ **Real-time Search:** Instantly find tasks with a powerful search filter.
+- ✅ **Filter by Status:** View tasks by status (All, Pending, In Progress, Completed).
+- ✅ **Sort by Date:** Organize your tasks by newest or oldest.
+- ✅ **Statistics Dashboard:** Visualize your productivity with a dashboard showing Total, Pending, and Completed tasks.
+- ✅ **LocalStorage Persistence:** Your tasks are saved in your browser, so you never lose your progress.
+- ✅ **Computed Signals:** State is derived and updated efficiently for optimal performance.
 
----
-
-## ⏳ Progress Status
-
-**Current Completion:** \~15–20%
-
-### Completed So Far (Initial Phase)
-
-- Angular project created (`ng new todo-app`)
-- `todo-app` component generated
-- Root component (`app.ts` and `app.html`) updated to include `todo-app`
-- Initial imports and Angular modules added (`FormsModule`, `NgClass`, `DatePipe`)
-- Standalone component setup for `todo-app`
-
-### Next Steps
-
-- Implement **task creation and display**
-- Add **task editing and deletion**
-- Integrate **LocalStorage persistence**
-- Add **status filtering, sorting, and search**
-- Finalize **modern UI with animations**
-
-> ⚠️ Note: This is an ongoing project. The tutorial is being followed step by step, and features will be added progressively.
-
----
-
-## ✨ Key Features (Planned)
-
-- 📝 **Create Tasks**
-- ✏️ **Edit Tasks**
-- 🗑️ **Delete Tasks**
-- ✅ **Toggle Completion Status**
-- 🔍 **Search Tasks**
-- 🎯 **Filter by Status**
-- 🔄 **Sort Tasks**
-- 💾 **LocalStorage Persistence**
-- 🎨 **Modern Dark Theme with Animations**
-- 📱 **Responsive Design**
+### **User Experience:**
+- ✅ **Responsive Design:** A clean, mobile-first UI that looks great on any device.
+- ✅ **Smooth Animations:** Subtle animations provide visual feedback and a modern feel.
+- ✅ **Edit Mode Highlighting:** The UI clearly indicates which task is being edited.
+- ✅ **Empty States:** Helpful messages are shown when there are no tasks.
+- ✅ **Confirmation Dialogs:** Prevents accidental data loss.
 
 ---
 
 ## 🛠️ Technologies Used
 
-| Technology                       | Purpose              | Version        |
-| -------------------------------- | -------------------- | -------------- |
-| Angular                          | Frontend Framework   | 21             |
-| TypeScript                       | Programming Language | 5.0+           |
-| Signals                          | State Management     | Built-in       |
-| Standalone Components            | Architecture         | Angular 21     |
-| FormsModule / NgClass / DatePipe | UI & Forms           | Angular Common |
-| Bootstrap 5                      | Styling              | 5.3+           |
-| Font Awesome                     | Icons                | 6+             |
-| CSS3                             | Styling & Animations | Latest         |
+| Technology | Description |
+|---|---|
+| **Angular (~18)** | A powerful framework for building dynamic client-side applications. |
+| **TypeScript** | For type safety and modern JavaScript features. |
+| **Angular Signals** | For modern, fine-grained, and high-performance reactive state management. |
+| **Standalone Components** | For a simplified and modular component architecture. |
+| **`@if` / `@for`** | Modern, built-in control flow for templates. |
+| **`[(ngModel)]`** | For robust two-way data binding in forms. |
+| **DatePipe** | For formatting dates consistently. |
+| **LocalStorage API** | For client-side data persistence. |
+| **Bootstrap 5** | For utility-first CSS and responsive grid system. |
+| **Font Awesome** | For a rich set of icons. |
+| **CSS3** | For custom styling, dark theme, and animations. |
 
 ---
 
 ## 🚀 Getting Started
 
+Follow these instructions to get a copy of the project up and running on your local machine.
+
 ### Prerequisites
 
-- **Node.js** ≥ 18
-- **npm** ≥ 9
-- **Angular CLI** ≥ 18
+- **Node.js** (v18.x or higher)
+- **npm** (v9.x or higher)
+- **Angular CLI** (v18.x or higher)
 
 ```bash
-npm install -g @angular/cli@latest
-ng version
+# Install Angular CLI globally if you haven't already
+npm install -g @angular/cli
 ```
 
-### Installation
+### Installation & Setup
 
-```bash
-git clone https://github.com/yourusername/angular-todo-app.git
-cd angular-todo-app
-npm install
-ng serve
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/mhnuk2007/todoAppTutorial.git
+   ```
 
-Open [http://localhost:4200](http://localhost:4200) to view the app.
+2. **Navigate to the project directory:**
+   ```bash
+   cd todoAppTutorial
+   ```
+
+3. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+4. **Run the development server:**
+   ```bash
+   ng serve
+   ```
+
+5. **Open the app in your browser:**
+   Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
 ---
 
-## 📁 Project Structure (Initial Phase)
+## 🎓 Learning & Tutorial
 
-```
-angular-todo-app/
-├── src/
-│   ├── app/
-│   │   ├── todo-app/
-│   │   │   ├── todo-app.ts      # Standalone component logic (initial setup)
-│   │   │   ├── todo-app.html    # Template placeholder
-│   │   │   ├── todo-app.css     # Initial styles
-│   │   │   └── todo-app.spec.ts # Unit test scaffold
-│   │   ├── app.ts               # Root component
-│   │   ├── app.html             # Root template
-│   │   └── app.config.ts        # Config (empty / placeholder)
-├── index.html
-├── main.ts
-├── styles.css
-├── angular.json
-├── package.json
-├── README.md
-└── TUTORIAL.md                  # Step-by-step guide being followed
-```
+This repository contains a detailed, 18-step tutorial that guides you through building this application from scratch. It's an excellent resource for:
+- **Beginners** learning Angular.
+- **Intermediate developers** looking to master Signals.
+- **Developers** building a portfolio project.
 
----
+The tutorial covers everything from setting up the project to deploying a finished application, with detailed explanations for every line of code.
 
-## 📖 Tutorial Reference
-
-This project is being built following a **step-by-step tutorial**:
-
-- **Step 1:** Create Angular project
-- **Step 2:** Generate `todo-app` component
-- **Step 3:** Update root component to use `todo-app`
-- **Step 4:** Import required Angular modules
-- **Step 5:** Initial component setup and standalone configuration
-
-> Progress beyond this tutorial is planned but **not yet implemented**.
+➡️ **[Start the Tutorial](./todoAppTutorial.md)**
 
 ---
 
 ## 🤝 Contributing
 
-Contributions are welcome! Even though this is a work-in-progress, feel free to:
-
-- Report issues
-- Suggest improvements
-- Submit Pull Requests
-
----
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/mhnuk2007/todoAppTutorial/issues).
 
 ## 📄 License
 
-MIT License – see [LICENSE](LICENSE)
-
----
-
-## 💬 Support
-
-- 📖 [Tutorial](todoAppTutorial.md)
-- 🐛 [Report Issues](https://github.com/yourusername/angular-todo-app/issues)
-- 💬 [Discussions](https://github.com/yourusername/angular-todo-app/discussions)
-
----
-
-> ⚡ **Note:** This README is meant to show **project progress so far**. The app is in early stages, and features will be implemented incrementally following the tutorial steps.
-
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
